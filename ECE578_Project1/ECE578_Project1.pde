@@ -6,6 +6,7 @@ channel W, X, Y, Z;
 
 int tick = 0;
 int scene = 0;
+int frames_per_tick = 60;
 boolean play = false;
 
 public void setup(){
@@ -23,7 +24,9 @@ public void draw(){
   background(200);
   
   if (play == true) {
-    sim_tick(scene);
+    if (frameCount % frames_per_tick == 0) {
+      sim_tick(scene);
+    }
   }
   
   draw_scene(scene);

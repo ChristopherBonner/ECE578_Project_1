@@ -84,6 +84,6 @@ void reset_everything(){
 void draw_stats(int x, int y) {
  fill(0);
  int offset = 0;
- text("Framerate: " + frameRate,x,y+offset); offset+=20;
+ text("Framerate: " + (int)frameRate,x,y+offset); offset+=20;
  text("Tick: " + tick,x,y+offset); offset+=20;
 }
