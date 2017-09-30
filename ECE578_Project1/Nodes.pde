@@ -6,6 +6,10 @@ class station {
  int state = 0;
  channel bound_channel;
  
+ // Array to contain the arrival times for packets
+ float[] uniform = new float[sim_length];
+ int[] arrivals = new int[sim_length];
+ 
  // Constructor
  station(String iname, float ix, float iy, channel ibound){
   name = iname;
@@ -27,11 +31,18 @@ class station {
  void process_tick() {
    if (state == 2) {
      attempt_transmission(bound_channel);
+     set_state(0);                           // probably have to remove this later
    }
  }
  
  void generate_traffic() {
    println("Generated Traffic for " + name);
+   
+   for (int i=0; i < sim_length; i++) {
+     uniform[i] = random(0.0, 1.0);
+     println(i + " = " + uniform[i]);
+     //arrivals[i] =  
+   }
  }
  
  void attempt_transmission(channel inch) {
@@ -91,6 +102,19 @@ class channel {
       set_state(2);
       println("collision detected on " + name);
     }
+    // Active line
+    else if (stations_using == 1) {
+      set_state(1);
+      println("line active " + name);
+    }
+    // Idle line
+    else if (stations_using == 0) {
+      set_state(0);
+      println("line idle " + name);
+    }
+    
+    // Done processing the line state. Clear the counter
+    stations_using = 0;
   }
   
   void set_state(int input){
@@ -103,6 +127,8 @@ class channel {
   }
   
   void display() {
+    fill(0);
+    text(name,(x1+x2)/2,(y1+y2)/2);
     stroke(statec);
     strokeWeight(4);
     line(x1,y1,x2,y2);

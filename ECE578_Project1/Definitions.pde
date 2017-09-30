@@ -4,6 +4,9 @@ color green = color(70,201,74);
 color red = color(196,55,53);
 color black = color(0);
 
+// 10 seconds * 1,000,000 microseconds/second
+int sim_length = 10;// * 1000000;
+
 void setup_scene_A() {
   W = new channel("W", 150, 200, 500, 200);
   X = new channel("X", 150, 400, 500, 400);
@@ -23,7 +26,6 @@ void setup_scene_B() {
   B = new station("B", 400, 200, Y);  // TODO: Must be double channel bound!!!
   C = new station("C", 650, 200, Z);
 
-  
   A.generate_traffic();
   C.generate_traffic();
 }
