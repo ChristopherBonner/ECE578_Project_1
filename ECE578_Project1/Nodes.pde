@@ -21,7 +21,26 @@ class station {
   if (input == 2) { state = green; }
  }
  
- void generate_traffic() {println("Generated Traffic for " + name);}
+ void process_tick() {
+   
+ }
+ 
+ void generate_traffic() {
+   println("Generated Traffic for " + name);
+ }
+ 
+ void attempt_transmission(channel inch) {
+   // If channel is busy, wait
+   if (inch.state == 1) {
+     set_state(1);
+     return;
+   }
+   // If channel is idle, attempt to send packet
+   if (inch.state == 0) {
+     set_state(2);
+     return;
+   }
+ }
  
  void display() {
    fill(state);
@@ -32,9 +51,17 @@ class station {
  }
 }
 
+
+
+
+
+
+
+
 // Link definition
 class channel {
-  int state = gray;
+  int statec = gray;
+  int state = 0;
   float x1,x2,y1,y2;
   String name;
   
@@ -47,17 +74,21 @@ class channel {
    y2 = iy2;
   }
   
+  void process_tick(){
+    
+  }
+  
   void set_state(int input){
    // Idle state
-   if (input == 0) { state = gray; }
+   if (input == 0) { statec = gray; state = 0;}
    // Busy
-   if (input == 1) { state = green; }
+   if (input == 1) { statec = green; state = 1;}
    // Collision
-   if (input == 2) { state = red; }
+   if (input == 2) { statec = red; state = 2;}
   }
   
   void display() {
-    stroke(state);
+    stroke(statec);
     strokeWeight(4);
     line(x1,y1,x2,y2);
     stroke(0);
