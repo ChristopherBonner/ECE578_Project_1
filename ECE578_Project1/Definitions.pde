@@ -5,23 +5,24 @@ color red = color(196,55,53);
 color black = color(0);
 
 void setup_scene_A() {
-  A = new station("A", 150, 200);
-  B = new station("B", 500, 200);
-  C = new station("C", 150, 400);
-  D = new station("D", 500, 400);
   W = new channel("W", 150, 200, 500, 200);
   X = new channel("X", 150, 400, 500, 400);
+  A = new station("A", 150, 200, W);
+  B = new station("B", 500, 200, W);
+  C = new station("C", 150, 400, X);
+  D = new station("D", 500, 400, X);
   
   A.generate_traffic();
   C.generate_traffic();
 }
 
 void setup_scene_B() {
-  A = new station("A", 150, 200);
-  B = new station("B", 400, 200);
-  C = new station("C", 650, 200);
   Y = new channel("Y", 150, 200, 400, 200);
   Z = new channel("Z", 650, 200, 400, 200);
+  A = new station("A", 150, 200, Y);
+  B = new station("B", 400, 200, Y);  // TODO: Must be double channel bound!!!
+  C = new station("C", 650, 200, Z);
+
   
   A.generate_traffic();
   C.generate_traffic();
@@ -49,6 +50,27 @@ void draw_scene(int mode) {
    C.display();
 
  }
+}
+
+void sim_tick(int mode) {
+  println("Sim Tick");
+  // Scenario A
+  if (mode == 0) {
+    A.process_tick();
+    B.process_tick();
+    C.process_tick();
+    D.process_tick();
+    W.process_tick();
+    X.process_tick();
+  }
+  // Scenario B
+  else if (mode == 1) {
+    A.process_tick();
+    B.process_tick();
+    C.process_tick();
+    Y.process_tick();
+    Z.process_tick();
+  }
 }
 
 void reset_everything(){

@@ -52,9 +52,27 @@ public void state_change1(GSlider source, GEvent event) { //_CODE_:state_debug:9
 } //_CODE_:state_debug:954275:
 
 public void advance_click(GButton source, GEvent event) { //_CODE_:advance:764250:
-  println("advance - GButton >> GEvent." + event + " @ " + millis());
+  //println("advance - GButton >> GEvent." + event + " @ " + millis());
+  
   tick +=1;
+  sim_tick(0);
+  
 } //_CODE_:advance:764250:
+
+public void A_trans_click1(GButton source, GEvent event) { //_CODE_:A_trans:981971:
+  println("A_trans - GButton >> GEvent." + event + " @ " + millis());
+  A.set_state(2);
+} //_CODE_:A_trans:981971:
+
+public void C_trans_click1(GButton source, GEvent event) { //_CODE_:C_Trans:767148:
+  println("B_Trans - GButton >> GEvent." + event + " @ " + millis());
+  C.set_state(2);
+} //_CODE_:C_Trans:767148:
+
+public void btrans_click(GButton source, GEvent event) { //_CODE_:B_trans:403026:
+  println("B_trans - GButton >> GEvent." + event + " @ " + millis());
+  B.set_state(2);
+} //_CODE_:B_trans:403026:
 
 
 
@@ -109,9 +127,19 @@ public void createGUI(){
   state_debug.setNumberFormat(G4P.INTEGER, 0);
   state_debug.setOpaque(false);
   state_debug.addEventHandler(this, "state_change1");
-  advance = new GButton(this, 85, 0, 80, 30);
-  advance.setText("Advance");
+  advance = new GButton(this, 274, 785, 80, 30);
+  advance.setText("TICK");
+  advance.setTextBold();
   advance.addEventHandler(this, "advance_click");
+  A_trans = new GButton(this, 56, 185, 80, 30);
+  A_trans.setText("Transmit A");
+  A_trans.addEventHandler(this, "A_trans_click1");
+  C_Trans = new GButton(this, 52, 394, 80, 30);
+  C_Trans.setText("Transmit B");
+  C_Trans.addEventHandler(this, "C_trans_click1");
+  B_trans = new GButton(this, 517, 183, 80, 30);
+  B_trans.setText("B Transmit");
+  B_trans.addEventHandler(this, "btrans_click");
 }
 
 // Variable declarations 
@@ -125,3 +153,6 @@ GOption coll_avoid;
 GOption carrier_sense; 
 GSlider state_debug; 
 GButton advance; 
+GButton A_trans; 
+GButton C_Trans; 
+GButton B_trans; 
