@@ -56,6 +56,7 @@ void draw_scene(int mode) {
 
 void sim_tick(int mode) {
   println("Sim Tick");
+  tick +=1;
   // Scenario A
   if (mode == 0) {
     A.process_tick();
@@ -76,12 +77,13 @@ void sim_tick(int mode) {
 }
 
 void reset_everything(){
- println("RESET EVERYTHING - TODO!!!!"); 
+ println("RESET EVERYTHING - TODO!!!!");
+ tick = 0;
 }
 
 void draw_stats(int x, int y) {
  fill(0);
  int offset = 0;
- text("Tick: " + tick,x,y+offset); offset+=20;
+ text("Framerate: " + frameRate,x,y+offset); offset+=20;
  text("Tick: " + tick,x,y+offset); offset+=20;
 }

@@ -45,12 +45,6 @@ public void carrier_sense_clicked(GOption source, GEvent event) { //_CODE_:carri
   reset_everything();
 } //_CODE_:carrier_sense:562831:
 
-public void state_change1(GSlider source, GEvent event) { //_CODE_:state_debug:954275:
-  println("state_debug - GSlider >> GEvent." + event + " @ " + millis());
-  A.set_state(state_debug.getValueI());
-  X.set_state(state_debug.getValueI());
-} //_CODE_:state_debug:954275:
-
 public void advance_click(GButton source, GEvent event) { //_CODE_:advance:764250:
   //println("advance - GButton >> GEvent." + event + " @ " + millis());
   
@@ -74,6 +68,21 @@ public void btrans_click(GButton source, GEvent event) { //_CODE_:B_trans:403026
   println("B_trans - GButton >> GEvent." + event + " @ " + millis());
   B.set_state(2);
 } //_CODE_:B_trans:403026:
+
+public void Play_click(GButton source, GEvent event) { //_CODE_:Play:258134:
+  println("Play - GButton >> GEvent." + event + " @ " + millis());
+  play = true;
+} //_CODE_:Play:258134:
+
+public void pause_click(GButton source, GEvent event) { //_CODE_:pause:285764:
+  println("pause - GButton >> GEvent." + event + " @ " + millis());
+  play = false;
+} //_CODE_:pause:285764:
+
+public void reset_click(GButton source, GEvent event) { //_CODE_:reset:446879:
+  println("reset - GButton >> GEvent." + event + " @ " + millis());
+  reset_everything();
+} //_CODE_:reset:446879:
 
 
 
@@ -120,14 +129,6 @@ public void createGUI(){
   Protocol.addControl(coll_avoid);
   coll_avoid.setSelected(true);
   Protocol.addControl(carrier_sense);
-  state_debug = new GSlider(this, 412, 781, 200, 80, 10.0);
-  state_debug.setShowValue(true);
-  state_debug.setShowLimits(true);
-  state_debug.setLimits(0, 0, 3);
-  state_debug.setShowTicks(true);
-  state_debug.setNumberFormat(G4P.INTEGER, 0);
-  state_debug.setOpaque(false);
-  state_debug.addEventHandler(this, "state_change1");
   advance = new GButton(this, 274, 785, 80, 30);
   advance.setText("TICK");
   advance.setTextBold();
@@ -141,6 +142,21 @@ public void createGUI(){
   B_trans = new GButton(this, 517, 183, 80, 30);
   B_trans.setText("B Transmit");
   B_trans.addEventHandler(this, "btrans_click");
+  Play = new GButton(this, 160, 0, 80, 30);
+  Play.setText("PLAY");
+  Play.setTextBold();
+  Play.setLocalColorScheme(GCScheme.GREEN_SCHEME);
+  Play.addEventHandler(this, "Play_click");
+  pause = new GButton(this, 240, 0, 80, 30);
+  pause.setText("PAUSE");
+  pause.setTextBold();
+  pause.setLocalColorScheme(GCScheme.YELLOW_SCHEME);
+  pause.addEventHandler(this, "pause_click");
+  reset = new GButton(this, 320, 0, 80, 30);
+  reset.setText("RESET");
+  reset.setTextBold();
+  reset.setLocalColorScheme(GCScheme.RED_SCHEME);
+  reset.addEventHandler(this, "reset_click");
 }
 
 // Variable declarations 
@@ -152,8 +168,10 @@ GOption Scenario_B;
 GToggleGroup Protocol; 
 GOption coll_avoid; 
 GOption carrier_sense; 
-GSlider state_debug; 
 GButton advance; 
 GButton A_trans; 
 GButton C_Trans; 
 GButton B_trans; 
+GButton Play; 
+GButton pause; 
+GButton reset; 
