@@ -11,14 +11,8 @@ public void setup(){
   size(900, 900, JAVA2D);
   createGUI();
   customGUI();
-  // Place your setup code here
   
-  // Station Initialization
-  //A = new station("A", 150, 200);
-  //B = new station("B", 500, 200);
-  //C = new station("C", 150, 400);
-  //D = new station("D", 500, 400);
-  
+  // Place your setup code here 
   setup_scene_A();
   
   textSize(20);
