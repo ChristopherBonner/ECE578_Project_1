@@ -1,7 +1,7 @@
 // Definition for station
 class station {
  String name, backoff;
- float xpos, ypos;
+ float xpos, ypos, xpos2, ypos2;
  color statec = gray;
  int state = 0;
  channel bound_channel;
@@ -11,11 +11,13 @@ class station {
  int[] arrivals = new int[sim_length];
  
  // Constructor
- station(String iname, float ix, float iy, channel ibound){
+ station(String iname, float ix, float iy, channel ibound, float ix2, float iy2){
   name = iname;
   xpos = ix;
   ypos = iy;
   bound_channel = ibound;
+  xpos2 = ix2;
+  ypos2 = iy2;
   backoff = "B:";
  }
  
@@ -40,7 +42,7 @@ class station {
    
    for (int i=0; i < sim_length; i++) {
      uniform[i] = random(0.0, 1.0);
-     println(i + " = " + uniform[i]);
+     //println(i + " = " + uniform[i]);
      //arrivals[i] =  
    }
  }
@@ -69,6 +71,21 @@ class station {
    fill(0);
    text(name,xpos-5,ypos-20);
    text(backoff, xpos-5, ypos+40);
+   
+   // Display upcoming traffic
+   for (int disp=0; disp<100; disp++) {
+     // Put the letter on top
+     fill(black);
+     text(name,xpos2,ypos2);
+     
+     fill(white);
+     strokeWeight(1);
+     rect(xpos2,ypos2 + disp*7,15,6,1);
+     
+     if((disp % 20) == 0) {
+       line(xpos2-7,ypos2 + disp*7,xpos2+25,ypos2+disp*7); 
+     }
+   }
  }
 }
 
@@ -133,5 +150,6 @@ class channel {
     strokeWeight(4);
     line(x1,y1,x2,y2);
     stroke(0);
+    strokeWeight(1);
   }
 }
