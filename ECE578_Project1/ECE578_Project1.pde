@@ -43,7 +43,7 @@ public void draw(){
   draw_scene(scene);
   percentage = tick*100/sim_length;
   draw_stats(640,25);
-  
+  draw_boxes();
 }
 
 // Use this method to add additional statements

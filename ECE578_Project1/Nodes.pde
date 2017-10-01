@@ -154,7 +154,7 @@ class channel {
   
   void display() {
     fill(0);
-    text(name,(x1+x2)/2,(y1+y2)/2);
+    text(name,(x1+x2)/2,(y1+y2)/2-3);
     stroke(statec);
     strokeWeight(4);
     line(x1,y1,x2,y2);

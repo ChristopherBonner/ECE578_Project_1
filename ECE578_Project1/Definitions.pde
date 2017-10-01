@@ -9,23 +9,23 @@ color white = color(255);
 int sim_length = 10 * 1000000;
 
 void setup_scene_A() {
-  W = new channel("W", 150, 200, 500, 200);
-  X = new channel("X", 150, 400, 500, 400);
-  A = new station("A", 150, 200, W, 700, 100);
-  B = new station("B", 500, 200, W, 730, 100);
-  C = new station("C", 150, 400, X, 790, 100);
-  D = new station("D", 500, 400, X, 820, 100);
+  W = new channel("W", 150, 300, 500, 300);
+  X = new channel("X", 150, 500, 500, 500);
+  A = new station("A", 150, 300, W, 700, 100);
+  B = new station("B", 500, 300, W, 730, 100);
+  C = new station("C", 150, 500, X, 790, 100);
+  D = new station("D", 500, 500, X, 820, 100);
   
   A.generate_traffic();
   C.generate_traffic();
 }
 
 void setup_scene_B() {
-  Y = new channel("Y", 150, 200, 400, 200);
-  Z = new channel("Z", 650, 200, 400, 200);
-  A = new station("A", 150, 200, Y, 700, 100);
-  B = new station("B", 400, 200, Y, 730, 100);  // TODO: Must be double channel bound!!!
-  C = new station("C", 650, 200, Z, 760, 100);
+  Y = new channel("Y", 100, 300, 350, 300);
+  Z = new channel("Z", 600, 300, 350, 300);
+  A = new station("A", 100, 300, Y, 700, 100);
+  B = new station("B", 350, 300, Y, 730, 100);  // TODO: Must be double channel bound!!!
+  C = new station("C", 600, 300, Z, 760, 100);
 
   A.generate_traffic();
   C.generate_traffic();
@@ -87,4 +87,11 @@ void draw_stats(int x, int y) {
  int offset = 0;
  text("Framerate: " + (int)frameRate,x,y+offset); offset+=20;
  text("Tick: " +tick+" ("+percentage+"%)",x,y+offset); offset+=20;
+}
+
+void draw_boxes() {
+  noFill();
+  rect(9,40,94,42); // Scenario
+  rect(117,40,158,42); // Strategy
+  rect(295,40,131,120); // Simspeed 
 }
