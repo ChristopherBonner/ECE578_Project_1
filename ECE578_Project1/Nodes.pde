@@ -1,13 +1,14 @@
 // Definition for station
 class station {
  String name, backoff;
- float xpos, ypos, xpos2, ypos2;
+ float xpos, ypos, xpos2, ypos2, lambda;
  color statec = gray;
  int state = 0;
  channel bound_channel;
  
  // Array to contain the arrival times for packets
  float[] uniform = new float[sim_length];
+ int[] intervals = new int[sim_length];
  int[] arrivals = new int[sim_length];
  
  // Constructor
@@ -19,6 +20,7 @@ class station {
   xpos2 = ix2;
   ypos2 = iy2;
   backoff = "B:";
+  lambda = 100;
  }
  
  void set_state(int input){
@@ -42,8 +44,9 @@ class station {
    
    for (int i=0; i < sim_length; i++) {
      uniform[i] = random(0.0, 1.0);
-     //println(i + " = " + uniform[i]);
-     //arrivals[i] =  
+     intervals[i] = int(- (1.0/lambda) * log(1.0 - uniform[i]));
+     arrivals[i] = round(random(1.0));
+     //println(i + " | " + uniform[i] + " | " + intervals[i] +" | " + arrivals[i]);
    }
  }
  
@@ -76,9 +79,15 @@ class station {
    for (int disp=0; disp<100; disp++) {
      // Put the letter on top
      fill(black);
-     text(name,xpos2,ypos2);
+     text(name,xpos2+2,ypos2-3);
      
-     fill(white);
+     // Color each tick based on whether a packet is generated at that time.
+     if (arrivals[tick+disp] == 1) {
+       fill(green); 
+     } else {
+       fill(white);
+     }
+     
      strokeWeight(1);
      rect(xpos2,ypos2 + disp*7,15,6,1);
      
@@ -127,7 +136,7 @@ class channel {
     // Idle line
     else if (stations_using == 0) {
       set_state(0);
-      println("line idle " + name);
+      //println("line idle " + name);
     }
     
     // Done processing the line state. Clear the counter

@@ -6,7 +6,7 @@ color black = color(0);
 color white = color(255);
 
 // 10 seconds * 1,000,000 microseconds/second
-int sim_length = 200;// * 1000000;
+int sim_length = 10 * 1000000;
 
 void setup_scene_A() {
   W = new channel("W", 150, 200, 500, 200);
@@ -56,7 +56,7 @@ void draw_scene(int mode) {
 }
 
 void sim_tick(int mode) {
-  println("Sim Tick " + tick);
+  //println("Sim Tick " + tick);
   tick +=1;
   // Scenario A
   if (mode == 0) {
@@ -86,5 +86,5 @@ void draw_stats(int x, int y) {
  fill(0);
  int offset = 0;
  text("Framerate: " + (int)frameRate,x,y+offset); offset+=20;
- text("Tick: " + tick,x,y+offset); offset+=20;
+ text("Tick: " +tick+" ("+percentage+"%)",x,y+offset); offset+=20;
 }

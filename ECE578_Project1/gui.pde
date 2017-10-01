@@ -54,21 +54,6 @@ public void advance_click(GButton source, GEvent event) { //_CODE_:advance:76425
   
 } //_CODE_:advance:764250:
 
-public void A_trans_click1(GButton source, GEvent event) { //_CODE_:A_trans:981971:
-  println("A_trans - GButton >> GEvent." + event + " @ " + millis());
-  A.set_state(2);
-} //_CODE_:A_trans:981971:
-
-public void C_trans_click1(GButton source, GEvent event) { //_CODE_:C_Trans:767148:
-  println("B_Trans - GButton >> GEvent." + event + " @ " + millis());
-  C.set_state(2);
-} //_CODE_:C_Trans:767148:
-
-public void btrans_click(GButton source, GEvent event) { //_CODE_:B_trans:403026:
-  println("B_trans - GButton >> GEvent." + event + " @ " + millis());
-  B.set_state(2);
-} //_CODE_:B_trans:403026:
-
 public void Play_click(GButton source, GEvent event) { //_CODE_:Play:258134:
   println("Play - GButton >> GEvent." + event + " @ " + millis());
   play = true;
@@ -83,6 +68,36 @@ public void reset_click(GButton source, GEvent event) { //_CODE_:reset:446879:
   println("reset - GButton >> GEvent." + event + " @ " + millis());
   reset_everything();
 } //_CODE_:reset:446879:
+
+public void fpt1_clicked(GOption source, GEvent event) { //_CODE_:fpt1:385218:
+  println("tps1 - GOption >> GEvent." + event + " @ " + millis());
+  frames_per_tick = 1;
+} //_CODE_:fpt1:385218:
+
+public void fpt10_clicked(GOption source, GEvent event) { //_CODE_:fpt10:291093:
+  println("tps10 - GOption >> GEvent." + event + " @ " + millis());
+  frames_per_tick = 10;
+} //_CODE_:fpt10:291093:
+
+public void fpt100_clicked(GOption source, GEvent event) { //_CODE_:fpt100:224268:
+  println("tps100 - GOption >> GEvent." + event + " @ " + millis());
+  frames_per_tick = 100;
+} //_CODE_:fpt100:224268:
+
+public void fpt_1_clicked(GOption source, GEvent event) { //_CODE_:fpt_1:666571:
+  println("fpt_1 - GOption >> GEvent." + event + " @ " + millis());
+  frames_per_tick = -1;
+} //_CODE_:fpt_1:666571:
+
+public void fpt_2_clicked1(GOption source, GEvent event) { //_CODE_:fpt_2:596532:
+  println("fpt_2 - GOption >> GEvent." + event + " @ " + millis());
+  frames_per_tick = -2;
+} //_CODE_:fpt_2:596532:
+
+public void fpt_3_clicked(GOption source, GEvent event) { //_CODE_:fpt_3:507343:
+  println("fpt_3 - GOption >> GEvent." + event + " @ " + millis());
+  frames_per_tick = -3;
+} //_CODE_:fpt_3:507343:
 
 
 
@@ -133,15 +148,6 @@ public void createGUI(){
   advance.setText("TICK");
   advance.setTextBold();
   advance.addEventHandler(this, "advance_click");
-  A_trans = new GButton(this, 56, 185, 80, 30);
-  A_trans.setText("Transmit A");
-  A_trans.addEventHandler(this, "A_trans_click1");
-  C_Trans = new GButton(this, 52, 394, 80, 30);
-  C_Trans.setText("Transmit B");
-  C_Trans.addEventHandler(this, "C_trans_click1");
-  B_trans = new GButton(this, 517, 183, 80, 30);
-  B_trans.setText("B Transmit");
-  B_trans.addEventHandler(this, "btrans_click");
   Play = new GButton(this, 160, 0, 80, 30);
   Play.setText("PLAY");
   Play.setTextBold();
@@ -157,6 +163,50 @@ public void createGUI(){
   reset.setTextBold();
   reset.setLocalColorScheme(GCScheme.RED_SCHEME);
   reset.addEventHandler(this, "reset_click");
+  Playback_Speed = new GToggleGroup();
+  fpt1 = new GOption(this, 380, 100, 120, 20);
+  fpt1.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  fpt1.setText("1 frame/tick");
+  fpt1.setTextBold();
+  fpt1.setOpaque(false);
+  fpt1.addEventHandler(this, "fpt1_clicked");
+  fpt10 = new GOption(this, 380, 120, 120, 20);
+  fpt10.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  fpt10.setText("10 frames/tick");
+  fpt10.setTextBold();
+  fpt10.setOpaque(false);
+  fpt10.addEventHandler(this, "fpt10_clicked");
+  fpt100 = new GOption(this, 380, 140, 120, 20);
+  fpt100.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  fpt100.setText("100 frames/tick");
+  fpt100.setTextBold();
+  fpt100.setOpaque(false);
+  fpt100.addEventHandler(this, "fpt100_clicked");
+  fpt_1 = new GOption(this, 380, 80, 120, 20);
+  fpt_1.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  fpt_1.setText("1 frame/10 ticks");
+  fpt_1.setTextBold();
+  fpt_1.setOpaque(false);
+  fpt_1.addEventHandler(this, "fpt_1_clicked");
+  fpt_2 = new GOption(this, 380, 60, 120, 20);
+  fpt_2.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  fpt_2.setText("1 frame/100 ticks");
+  fpt_2.setTextBold();
+  fpt_2.setOpaque(false);
+  fpt_2.addEventHandler(this, "fpt_2_clicked1");
+  fpt_3 = new GOption(this, 380, 40, 140, 20);
+  fpt_3.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  fpt_3.setText("1 frame/1000 ticks");
+  fpt_3.setTextBold();
+  fpt_3.setOpaque(false);
+  fpt_3.addEventHandler(this, "fpt_3_clicked");
+  Playback_Speed.addControl(fpt1);
+  Playback_Speed.addControl(fpt10);
+  Playback_Speed.addControl(fpt100);
+  fpt100.setSelected(true);
+  Playback_Speed.addControl(fpt_1);
+  Playback_Speed.addControl(fpt_2);
+  Playback_Speed.addControl(fpt_3);
 }
 
 // Variable declarations 
@@ -169,9 +219,13 @@ GToggleGroup Protocol;
 GOption coll_avoid; 
 GOption carrier_sense; 
 GButton advance; 
-GButton A_trans; 
-GButton C_Trans; 
-GButton B_trans; 
 GButton Play; 
 GButton pause; 
 GButton reset; 
+GToggleGroup Playback_Speed; 
+GOption fpt1; 
+GOption fpt10; 
+GOption fpt100; 
+GOption fpt_1; 
+GOption fpt_2; 
+GOption fpt_3; 
