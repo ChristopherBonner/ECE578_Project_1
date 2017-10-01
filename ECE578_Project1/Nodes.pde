@@ -4,6 +4,7 @@ class station {
  float xpos, ypos, xpos2, ypos2, lambda;
  color statec = gray;
  int state = 0;
+ int packet_buffer = 0;
  channel bound_channel;
  
  // Array to contain the arrival times for packets
@@ -33,9 +34,18 @@ class station {
  }
  
  void process_tick() {
-   if (state == 2) {
+   // Add any new packets to the waiting list
+   if (arrivals[tick] == 1) {
+     packet_buffer +=1;
+   }
+   
+   if (packet_buffer == 0) {
+     // Nothing to send
+     set_state(0);
+   } else if (packet_buffer > 0) {
+     // Ready to transmit
+     set_state(1);
      attempt_transmission(bound_channel);
-     set_state(0);                           // probably have to remove this later
    }
  }
  
@@ -45,7 +55,7 @@ class station {
    for (int i=0; i < sim_length; i++) {
      uniform[i] = random(0.0, 1.0);
      intervals[i] = int(- (1.0/lambda) * log(1.0 - uniform[i]));
-     arrivals[i] = round(random(1.0));
+     arrivals[i] = round(random(1.0)-0.4);
      //println(i + " | " + uniform[i] + " | " + intervals[i] +" | " + arrivals[i]);
    }
  }
@@ -73,7 +83,7 @@ class station {
    ellipse(xpos,ypos,20,20);
    fill(0);
    text(name,xpos-5,ypos-20);
-   text(backoff, xpos-5, ypos+40);
+   text("Wait: "+packet_buffer, xpos-5, ypos+40);
    
    // Display upcoming traffic
    for (int disp=0; disp<100; disp++) {
