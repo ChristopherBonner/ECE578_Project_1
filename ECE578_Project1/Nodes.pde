@@ -1,10 +1,11 @@
 // Definition for station
 class station {
- String name, backoff;
+ String name;
  float xpos, ypos, xpos2, ypos2, lambda;
  color statec = gray;
  int state = 0;
  int packet_buffer = 0;
+ int backoff;
  channel bound_channel;
  
  // Array to contain the arrival times for packets
@@ -20,7 +21,7 @@ class station {
   bound_channel = ibound;
   xpos2 = ix2;
   ypos2 = iy2;
-  backoff = "B:";
+  backoff = 0;
   lambda = 100;
  }
  
@@ -31,6 +32,8 @@ class station {
   if (input == 1) { statec = yellow; state = 1;}
   // Transmit
   if (input == 2) { statec = green; state = 2;}
+  // Backoff
+  if (input == 3) { statec = blue; state = 3;}
  }
  
  void process_tick() {
@@ -42,10 +45,28 @@ class station {
    if (packet_buffer == 0) {
      // Nothing to send
      set_state(0);
+     
    } else if (packet_buffer > 0) {
-     // Ready to transmit
-     set_state(1);
-     attempt_transmission(bound_channel);
+     // Packets ready to send
+     switch(CA_channel_grab(bound_channel)) {
+       case -1:
+         // Channel is busy
+         set_state(1);
+         break;
+       case 0:
+         // Channel is idle
+         backoff -= 1;
+         
+         if (backoff == 0) {
+           
+         }
+         
+         break;
+       case 1:
+         // Channel is granted to this station
+         set_state(2);
+         break;
+     }
    }
  }
  
@@ -60,22 +81,31 @@ class station {
    }
  }
  
- void attempt_transmission(channel inch) {
+ // CSMA with Collision Avoidance
+ int CA_channel_grab(channel inch) {
    
    // If channel is busy, wait
    if (inch.state == 1) {
      println("Channel " + inch.name + " is busy");
-     set_state(1);
-     return;
+     return -1;
    }
    
-   // If channel is idle, attempt to send packet
-   if (inch.state == 0) {
-     println(name + " sending packet");
-     set_state(2);
-     inch.stations_using += 1;
-     return;
+   // If channel is in DIFS mode
+   if (inch.state == 3) {
+     // Choose a backoff period
+     backoff = round(random(0.0,CW0-1));
    }
+   
+   // If channel is idle, attempt to take channel
+   //if (inch.state == 0) {
+   //  println(name + " is trying to take channel "+inch.name);
+   //  inch.stations_using += 1;
+   //  return 0;
+   //}
+   
+   
+   
+   return -1;
  }
  
  void display() {
@@ -83,7 +113,8 @@ class station {
    ellipse(xpos,ypos,20,20);
    fill(0);
    text(name,xpos-5,ypos-20);
-   text("Wait: "+packet_buffer, xpos-5, ypos+40);
+   text("Wait: "+packet_buffer, xpos-15, ypos+40);
+   text("Back: "+backoff, xpos-15, ypos+60);
    
    // Display upcoming traffic
    for (int disp=0; disp<100; disp++) {
@@ -118,10 +149,10 @@ class station {
 // Link definition
 class channel {
   int statec = gray;
-  int state = 0;
+  int state = 3;
   int stations_using = 0;
   float x1,x2,y1,y2;
-  String name;
+  String name, statestr;
   
   // Constructor
   channel(String iname, float ix1, float iy1, float ix2, float iy2) {
@@ -155,16 +186,19 @@ class channel {
   
   void set_state(int input){
    // Idle state
-   if (input == 0) { statec = gray; state = 0;}
+   if (input == 0) { statec = gray; state = 0; statestr="IDLE";}
    // Busy
-   if (input == 1) { statec = green; state = 1;}
+   if (input == 1) { statec = green; state = 1; statestr="BUSY";}
    // Collision
-   if (input == 2) { statec = red; state = 2;}
+   if (input == 2) { statec = red; state = 2; statestr="COLLISION";}
+   // DIFS
+   if (input == 3) { statec = black; state = 3; statestr="DIFS";}
   }
   
   void display() {
     fill(0);
     text(name,(x1+x2)/2,(y1+y2)/2-3);
+    text("State: "+statestr,(x1+x2)/2-20,(y1+y2)/2+20);
     stroke(statec);
     strokeWeight(4);
     line(x1,y1,x2,y2);

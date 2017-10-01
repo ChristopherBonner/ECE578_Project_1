@@ -4,6 +4,9 @@ color green = color(70,201,74);
 color red = color(196,55,53);
 color black = color(0);
 color white = color(255);
+color blue = color(53,124,196);
+
+int CW0 = 80; // 4 slots * 20 microseconds/slot
 
 // 10 seconds * 1,000,000 microseconds/second
 int sim_length = 10 * 1000000;
