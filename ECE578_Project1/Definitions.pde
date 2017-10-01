@@ -11,6 +11,9 @@ int CW0 = 80; // 4 slots * 20 microseconds/slot
 // 10 seconds * 1,000,000 microseconds/second
 int sim_length = 10 * 1000000;
 
+// Ticks are microseconds, slots are 20 microseconds
+int slot = 0, old_slot = 0;
+
 void setup_scene_A() {
   W = new channel("W", 150, 300, 500, 300);
   X = new channel("X", 150, 500, 500, 500);
@@ -61,6 +64,11 @@ void draw_scene(int mode) {
 void sim_tick(int mode) {
   //println("Sim Tick " + tick);
   tick +=1;
+  
+  if (tick % 20 == 0) {
+    slot +=1;  
+  }
+  
   // Scenario A
   if (mode == 0) {
     A.process_tick();
@@ -88,8 +96,10 @@ void reset_everything(){
 void draw_stats(int x, int y) {
  fill(0);
  int offset = 0;
- text("Framerate: " + (int)frameRate,x,y+offset); offset+=20;
- text("Tick: " +tick+" ("+percentage+"%)",x,y+offset); offset+=20;
+ text("Framerate: " + (int)frameRate      ,x,y+offset); offset+=20;
+ text("Tick: " +tick+" ("+percentage+"%)" ,x,y+offset); offset+=20;
+ text("Slot: " +slot                      ,x,y+offset); offset+=20;
+ 
 }
 
 void draw_boxes() {

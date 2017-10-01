@@ -27,13 +27,13 @@ class station {
  
  void set_state(int input){
   // Idle state - no packet waiting
-  if (input == 0) { statec = gray; state = 0;}
+  if (input == 0) { statec = gray;   state = 0;}
   // Ready to Transmit state
   if (input == 1) { statec = yellow; state = 1;}
   // Transmit
-  if (input == 2) { statec = green; state = 2;}
+  if (input == 2) { statec = green;  state = 2;}
   // Backoff
-  if (input == 3) { statec = blue; state = 3;}
+  if (input == 3) { statec = blue;   state = 3;}
  }
  
  void process_tick() {
@@ -47,24 +47,25 @@ class station {
      set_state(0);
      
    } else if (packet_buffer > 0) {
+     
      // Packets ready to send
-     switch(CA_channel_grab(bound_channel)) {
-       case -1:
-         // Channel is busy
-         set_state(1);
-         break;
+     switch(bound_channel.state) {
+       // Line is idle so decrement backoff and/or attempt to grab channel
        case 0:
-         // Channel is idle
-         backoff -= 1;
-         
+         backoff -=1;
          if (backoff == 0) {
-           
+           bound_channel.stations_using +=1;
          }
-         
          break;
+       // Line is busy
        case 1:
-         // Channel is granted to this station
-         set_state(2);
+         break;
+       // Collision detected in the line
+       case 2:
+         break;
+       // Line is in DIFS mode, select a random backoff value
+       case 3:
+         backoff = round(random(0,CW0));
          break;
      }
    }
@@ -81,33 +82,6 @@ class station {
    }
  }
  
- // CSMA with Collision Avoidance
- int CA_channel_grab(channel inch) {
-   
-   // If channel is busy, wait
-   if (inch.state == 1) {
-     println("Channel " + inch.name + " is busy");
-     return -1;
-   }
-   
-   // If channel is in DIFS mode
-   if (inch.state == 3) {
-     // Choose a backoff period
-     backoff = round(random(0.0,CW0-1));
-   }
-   
-   // If channel is idle, attempt to take channel
-   //if (inch.state == 0) {
-   //  println(name + " is trying to take channel "+inch.name);
-   //  inch.stations_using += 1;
-   //  return 0;
-   //}
-   
-   
-   
-   return -1;
- }
- 
  void display() {
    fill(statec);
    ellipse(xpos,ypos,20,20);
@@ -117,11 +91,12 @@ class station {
    text("Back: "+backoff, xpos-15, ypos+60);
    
    // Display upcoming traffic
+   // Put the letter on top
+   fill(black);
+   text(name,xpos2+2,ypos2-3);
+   
    for (int disp=0; disp<100; disp++) {
-     // Put the letter on top
-     fill(black);
-     text(name,xpos2+2,ypos2-3);
-     
+
      // Color each tick based on whether a packet is generated at that time.
      if (arrivals[tick+disp] == 1) {
        fill(green); 
@@ -164,24 +139,30 @@ class channel {
   }
   
   void process_tick(){
-    // Detect collisions
-    if (stations_using > 1) {
-      set_state(2);
-      println("collision detected on " + name);
+    // Slot rollover behavior
+    if (slot != old_slot) {
+
+      // Detect collisions
+      if (stations_using > 1) {
+        set_state(2);
+        println("collision detected on " + name);
+      }
+      // Active line
+      else if (stations_using == 1) {
+        set_state(1);
+        println("line active " + name);
+      }
+      // Idle line
+      else if (stations_using == 0) {
+        set_state(3);
+        //println("line idle " + name);
+      }
+      
+      stations_using = 0;
+      old_slot = slot;
     }
-    // Active line
-    else if (stations_using == 1) {
-      set_state(1);
-      println("line active " + name);
-    }
-    // Idle line
-    else if (stations_using == 0) {
-      set_state(0);
-      //println("line idle " + name);
-    }
-    
     // Done processing the line state. Clear the counter
-    stations_using = 0;
+    //stations_using = 0;
   }
   
   void set_state(int input){
@@ -199,6 +180,7 @@ class channel {
     fill(0);
     text(name,(x1+x2)/2,(y1+y2)/2-3);
     text("State: "+statestr,(x1+x2)/2-20,(y1+y2)/2+20);
+    text("Using: "+stations_using,(x1+x2)/2-20,(y1+y2)/2+40);
     stroke(statec);
     strokeWeight(4);
     line(x1,y1,x2,y2);

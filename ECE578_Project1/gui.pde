@@ -45,15 +45,6 @@ public void carrier_sense_clicked(GOption source, GEvent event) { //_CODE_:carri
   reset_everything();
 } //_CODE_:carrier_sense:562831:
 
-public void advance_click(GButton source, GEvent event) { //_CODE_:advance:764250:
-  //println("advance - GButton >> GEvent." + event + " @ " + millis());
-  
-  tick +=1;
-  sim_tick(0);
-  
-  
-} //_CODE_:advance:764250:
-
 public void Play_click(GButton source, GEvent event) { //_CODE_:Play:258134:
   println("Play - GButton >> GEvent." + event + " @ " + millis());
   play = true;
@@ -144,10 +135,6 @@ public void createGUI(){
   Protocol.addControl(coll_avoid);
   coll_avoid.setSelected(true);
   Protocol.addControl(carrier_sense);
-  advance = new GButton(this, 274, 785, 80, 30);
-  advance.setText("TICK");
-  advance.setTextBold();
-  advance.addEventHandler(this, "advance_click");
   Play = new GButton(this, 160, 0, 80, 30);
   Play.setText("PLAY");
   Play.setTextBold();
@@ -218,7 +205,6 @@ GOption Scenario_B;
 GToggleGroup Protocol; 
 GOption coll_avoid; 
 GOption carrier_sense; 
-GButton advance; 
 GButton Play; 
 GButton pause; 
 GButton reset; 
