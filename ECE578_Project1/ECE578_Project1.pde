@@ -25,15 +25,18 @@ public void draw(){
   background(200);
   
   if (play == true) {
+    
     // Simulation speed determination
     // Negative values indicate multiple ticks per second
     if (frames_per_tick < 0) {
+      // Here we scale the ticks/frame speed by 10^fpt
       int count = int(pow(10.0,float(-frames_per_tick)));
-      //println(count);
+
       for (int i=count; i>0; i--) {
         sim_tick(scene);
       }
     } else {
+      // Positive values of frame_per_tick lead to a slow sim speed
       if (frameCount % frames_per_tick == 0) {
         sim_tick(scene);
       }

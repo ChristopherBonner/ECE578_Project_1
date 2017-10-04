@@ -72,33 +72,40 @@ void sim_tick(int mode) {
   // Scenario A
   if (mode == 0) {
     A.process_tick();
-    B.process_tick();
+    //B.process_tick();
     C.process_tick();
-    D.process_tick();
-    W.process_tick();
-    X.process_tick();
+    //D.process_tick();
+    //W.process_tick();
+    //X.process_tick();
+    if (tick % 20 == 0) {
+      A.process_slot();
+      C.process_slot();
+      W.process_slot();
+      X.process_slot();
+    }
   }
   // Scenario B
   else if (mode == 1) {
     A.process_tick();
     B.process_tick();
     C.process_tick();
-    Y.process_tick();
-    Z.process_tick();
+    //Y.process_tick();
+    //Z.process_tick();
   }
 }
 
 void reset_everything(){
  println("RESET EVERYTHING - TODO!!!!");
  tick = 0;
+ slot = 0;
 }
 
 void draw_stats(int x, int y) {
  fill(0);
  int offset = 0;
  text("Framerate: " + (int)frameRate      ,x,y+offset); offset+=20;
- text("Tick: " +tick+" ("+percentage+"%)" ,x,y+offset); offset+=20;
- text("Slot: " +slot                      ,x,y+offset); offset+=20;
+ text("     Tick: " +tick+" ("+percentage+"%)" ,x,y+offset); offset+=20;
+ text("     Slot: " +slot                      ,x,y+offset); offset+=20;
  
 }
 
