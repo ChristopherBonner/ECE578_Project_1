@@ -5,8 +5,8 @@ class station {
  color statec = gray;
  int state = 0;
  int packet_buffer = 0;
- int backoff;
- int difs;
+ int backoff, difs, transmit_time, sent;
+ int collisions=0;
  channel bound_channel;
  
  // Array to contain the arrival times for packets
@@ -25,6 +25,7 @@ class station {
   backoff = 0;
   lambda = 100;
   difs = 40;
+  sent = 0;
  }
  
  void set_state(int input){
@@ -35,9 +36,9 @@ class station {
   // Transmit
   if (input == 2) { statec = green;  state = 2;}
   // Backoff
-  if (input == 3) { statec = blue;   state = 3; backoff = round(random(0,CW0));}
+  if (input == 3) { statec = blue;   state = 3; }
   // DIFS
-  if (input == 4) { statec = blue;   state = 4; difs = 40;}
+  if (input == 4) { statec = blue;   state = 4; }
  }
  
  void process_slot() {
@@ -48,14 +49,42 @@ class station {
    else if (packet_buffer > 0) {
      
      // If we were idle, lets enter DIFS
-     if (state == 0) { set_state(4); }
+     if (state == 0) { set_state(4); difs = 40;}
      
      // If the DIFS countdown is complete, enter backoff mode
      if ((state == 4)&&(difs <= 0)) {
+       backoff = round(random(0,CW0));
        set_state(3);
      }
      
+     // If the backoff counter runs out, attempt transmission
+     if ((state == 3)&&(backoff <=0)) {
+       set_state(1);
+       bound_channel.stations_using += 1;
+     }
      
+     // Collision !!!
+     if ((state == 1)&&(bound_channel.state == 2)) {
+       collisions += 1;
+       backoff = round(random(0,CW0)); // need exponential backoff added here
+       bound_channel.stations_using = 0;
+       set_state(3);
+     }
+     
+     // Success - we got the channel
+     if ((state == 1)&&(bound_channel.state == 1)) {
+       set_state(2);
+       transmit_time = 100;  // need to implement actual time to send frame & receive ACK + SIFS
+     }
+     
+     // Transmission complete
+     if ((state == 2)&&(transmit_time <= 0)) {
+       sent += 1;
+       packet_buffer -=1;
+       bound_channel.set_state(0);
+       bound_channel.stations_using = 0;
+       set_state(0);
+     }
    }
  }
  
@@ -72,8 +101,16 @@ class station {
    }
    
    // If in Backoff mode, decrement for any idle tick
-   if ((state == 3)&&(bound_channel.state == 0)) {
-     backoff -= 1;
+   // Note that the bound channel collision state is also valid for backoff
+   if ((state == 3)&&((bound_channel.state == 0)||(bound_channel.state == 2))) {
+     if(backoff > 0) {
+       backoff -= 1;
+     }
+   }
+   
+   // If in transmit mode, decrement the counter
+   if (state == 2) {
+     transmit_time -= 1;
    }
    
  }
@@ -84,19 +121,22 @@ class station {
    for (int i=0; i < sim_length; i++) {
      uniform[i] = random(0.0, 1.0);
      intervals[i] = int(- (1.0/lambda) * log(1.0 - uniform[i]));
-     arrivals[i] = round(random(1.0)-0.4);
+     arrivals[i] = round(random(1.0)-0.495);
      //println(i + " | " + uniform[i] + " | " + intervals[i] +" | " + arrivals[i]);
    }
  }
  
  void display() {
    fill(statec);
-   ellipse(xpos,ypos,20,20);
+   ellipse(xpos,ypos,30,30);
    fill(0);
-   text(name,xpos-5,ypos-20);
-   text("Buff: "+packet_buffer, xpos-15, ypos+40);
-   text("DIFS: "+difs, xpos-15, ypos+60);
-   text("Back: "+backoff, xpos-15, ypos+80);
+   text(name,xpos-6,ypos+7);
+   text("Buff: "+packet_buffer, xpos-15, ypos-30);
+   text("DIFS: "+difs,          xpos-15, ypos+36);
+   text("Back: "+backoff,       xpos-15, ypos+58);
+   text("Coll: "+collisions,    xpos-15, ypos-50);
+   text("Sent: "+sent,          xpos-15, ypos-70);
+   text("Trans: "+transmit_time, xpos-15, ypos+81);
    
    // Display upcoming traffic
    // Put the letter on top
@@ -148,13 +188,20 @@ class channel {
   }
   
   void process_slot() {
-    if      (stations_using > 1)  { set_state(2); }  // Collision
+    // Collision detected
+    if (stations_using > 1)  {
+      set_state(2);
+      //stations_using = 0;
+    }
     else if (stations_using == 0) { set_state(0); }  // Idle
     else if (stations_using == 1) { set_state(1); }  // In use
+
   }
   
   void process_tick(){
-
+    
+    // Have to reset to idle after a collision otherwise backoff countdowns won't work
+    //if (state == 2) { set_state(0); }
   }
   
   void set_state(int input){

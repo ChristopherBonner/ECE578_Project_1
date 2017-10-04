@@ -16,11 +16,11 @@ int slot = 0, old_slot = 0;
 
 void setup_scene_A() {
   W = new channel("W", 150, 300, 500, 300);
-  X = new channel("X", 150, 500, 500, 500);
-  A = new station("A", 150, 300, W, 700, 100);
-  B = new station("B", 500, 300, W, 730, 100);
-  C = new station("C", 150, 500, X, 790, 100);
-  D = new station("D", 500, 500, X, 820, 100);
+  X = new channel("X", 150, 450, 500, 450);
+  A = new station("A", 150, 300, X, 700, 100);
+  B = new station("B", 500, 300, X, 730, 100);
+  C = new station("C", 150, 600, X, 790, 100);
+  D = new station("D", 500, 600, X, 820, 100);
   
   A.generate_traffic();
   C.generate_traffic();
@@ -41,7 +41,7 @@ void draw_scene(int mode) {
  
   // Scenario A
  if (mode == 0) {
-   W.display();
+   //W.display();
    X.display();
    A.display();
    B.display();
@@ -75,13 +75,15 @@ void sim_tick(int mode) {
     //B.process_tick();
     C.process_tick();
     //D.process_tick();
-    //W.process_tick();
-    //X.process_tick();
+    W.process_tick();
+    X.process_tick();
     if (tick % 20 == 0) {
       A.process_slot();
       C.process_slot();
       W.process_slot();
       X.process_slot();
+      A.process_slot(); // Have to repeat the process twice to see if collision or success occurred that slot
+      C.process_slot(); // Have to repeat the process twice to see if collision or success occurred that slot
     }
   }
   // Scenario B
