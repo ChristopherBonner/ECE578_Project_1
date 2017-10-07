@@ -13,7 +13,7 @@ float percentage=0.0;
 boolean play = false;
 
 public void setup(){
-  size(900, 900, JAVA2D);
+  size(1000, 900, JAVA2D);
   createGUI();
   customGUI();
   
@@ -54,7 +54,7 @@ public void draw(){
   
   draw_scene(scene);
   percentage = tick*100.0/sim_length;
-  draw_stats(536,25);
+  draw_stats(640,25);
   draw_boxes();
 }
 

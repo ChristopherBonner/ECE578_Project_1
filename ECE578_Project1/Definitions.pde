@@ -23,10 +23,10 @@ int slot = 0, old_slot = 0;
 void setup_scene_A() {
   W = new channel("W", 150, 300, 500, 300);
   X = new channel("X", 150, 450, 500, 450);
-  A = new station("A", 150, 300, X, 700, 100);
-  B = new station("B", 500, 300, X, 730, 100);
-  C = new station("C", 150, 600, X, 790, 100);
-  D = new station("D", 500, 600, X, 820, 100);
+  A = new station("A", 150, 300, X, 800, 120);
+  B = new station("B", 500, 300, X, 830, 120);
+  C = new station("C", 150, 600, X, 890, 120);
+  D = new station("D", 500, 600, X, 920, 120);
   
   A.generate_traffic();
   C.generate_traffic();
@@ -34,10 +34,10 @@ void setup_scene_A() {
 
 void setup_scene_B() {
   Y = new channel("Y", 100, 300, 350, 300);
-  Z = new channel("Z", 600, 300, 350, 300);
-  A = new station("A", 100, 300, Y, 700, 100);
-  B = new station("B", 350, 300, Y, 730, 100);  // TODO: Must be double channel bound!!!
-  C = new station("C", 600, 300, Z, 760, 100);
+  Z = new channel("Z", 700, 300, 350, 300);
+  A = new station("A", 100, 300, Y, 840, 120);
+  B = new station("B", 400, 300, Y, 870, 120);  // TODO: Must be double channel bound!!!
+  C = new station("C", 700, 300, Z, 900, 120);
 
   A.generate_traffic();
   C.generate_traffic();
@@ -119,7 +119,9 @@ void draw_stats(int x, int y) {
 
 void draw_boxes() {
   noFill();
-  rect(9,40,94,42); // Scenario
-  rect(117,40,158,42); // Strategy
-  rect(295,40,131,120); // Simspeed 
+  rect(9,40,94,60); // Scenario
+  rect(117,40,158,60); // Strategy
+  rect(295,40,131,140); // Simspeed
+  rect(460,40,90,100); // Simspeed 
+  rect(565,40,90,100); // Simspeed 
 }
