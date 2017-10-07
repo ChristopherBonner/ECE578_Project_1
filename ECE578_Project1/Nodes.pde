@@ -6,7 +6,6 @@ class station {
  int state = 0;
  int packet_buffer = 0;
  int backoff, difs, transmit_time, sent;
- int collisions=0;
  channel bound_channel;
  
  // Array to contain the arrival times for packets
@@ -36,7 +35,7 @@ class station {
   // Transmit
   if (input == 2) { statec = green;  state = 2;}
   // Backoff
-  if (input == 3) { statec = blue;   state = 3; }
+  if (input == 3) { statec = yellow;   state = 3; }
   // DIFS
   if (input == 4) { statec = blue;   state = 4; }
  }
@@ -65,7 +64,6 @@ class station {
      
      // Collision !!!
      if ((state == 1)&&(bound_channel.state == 2)) {
-       collisions += 1;
        backoff = round(random(0,CW0)); // need exponential backoff added here
        bound_channel.stations_using = 0;
        set_state(3);
@@ -131,12 +129,14 @@ class station {
    ellipse(xpos,ypos,30,30);
    fill(0);
    text(name,xpos-6,ypos+7);
-   text("Buff: "+packet_buffer, xpos-15, ypos-30);
-   text("DIFS: "+difs,          xpos-15, ypos+36);
-   text("Back: "+backoff,       xpos-15, ypos+58);
-   text("Coll: "+collisions,    xpos-15, ypos-50);
-   text("Sent: "+sent,          xpos-15, ypos-70);
-   text("Trans: "+transmit_time, xpos-15, ypos+81);
+   text("Buff: "+packet_buffer, xpos-25, ypos-30);
+   text("DIFS: "+difs,          xpos-25, ypos+40);
+   text("Back: "+backoff,       xpos-25, ypos+60);
+   text("Tran: "+transmit_time, xpos-25, ypos+80);
+
+   fill(green);
+   text("Sent: "+sent,          xpos-25, ypos-50);
+   
    
    // Display upcoming traffic
    // Put the letter on top
@@ -174,6 +174,7 @@ class channel {
   int statec = gray;
   int state = 3;
   int stations_using = 0;
+  int collisions=0;
   float x1,x2,y1,y2;
   String name, statestr;
   
@@ -191,6 +192,7 @@ class channel {
     // Collision detected
     if (stations_using > 1)  {
       set_state(2);
+      collisions += 1; println("Collision "+name+" "+tick);
       //stations_using = 0;
     }
     else if (stations_using == 0) { set_state(0); }  // Idle
@@ -214,10 +216,12 @@ class channel {
   }
   
   void display() {
-    fill(0);
+    fill(statec);
     text(name,(x1+x2)/2,(y1+y2)/2-3);
-    text("State: "+statestr,(x1+x2)/2-20,(y1+y2)/2+20);
-    text("Using: "+stations_using,(x1+x2)/2-20,(y1+y2)/2+40);
+    text("State: "+statestr,(x1+x2)/2-36,(y1+y2)/2+20);
+    //text("Using: "+stations_using,(x1+x2)/2-20,(y1+y2)/2+40);
+    fill(red);
+    text("Collisions: "+collisions,(x1+x2)/2-45,(y1+y2)/2+40);
     stroke(statec);
     strokeWeight(4);
     line(x1,y1,x2,y2);

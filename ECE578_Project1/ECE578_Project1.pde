@@ -4,6 +4,8 @@ import g4p_controls.*;
 station A, B, C, D;
 channel W, X, Y, Z;
 
+PFont font;
+
 int tick = 0;
 int scene = 0;
 int frames_per_tick = 100;
@@ -18,6 +20,9 @@ public void setup(){
   // Place your setup code here 
   setup_scene_A();
   
+  // Setup font
+  font = loadFont("Consolas-Bold-20.vlw");
+  textFont(font,20);
   textSize(20);
 }
 

@@ -1,6 +1,6 @@
 color gray = color(165,169,175);
 color yellow = color(209,195,73);
-color green = color(70,201,74);
+color green = color(38,102,34);
 color red = color(196,55,53);
 color black = color(0);
 color white = color(255);
