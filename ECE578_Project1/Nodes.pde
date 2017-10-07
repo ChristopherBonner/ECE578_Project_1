@@ -89,7 +89,8 @@ class station {
  void process_tick() {
    
    // Add any new packets to the waiting list
-   if (arrivals[tick] == 1) {
+   // Includes array overflow protection
+   if ((tick<sim_length)&&(arrivals[tick] == 1)) {
      packet_buffer +=1;
    }
    
@@ -145,11 +146,18 @@ class station {
    
    for (int disp=0; disp<100; disp++) {
 
-     // Color each tick based on whether a packet is generated at that time.
-     if (arrivals[tick+disp] == 1) {
-       fill(green); 
+     // Array overrun protection
+     if ((tick+disp) > (sim_length-2)) {
+       fill(gray);
+       
      } else {
-       fill(white);
+     
+       // Color each tick based on whether a packet is generated at that time.
+       if (arrivals[tick+disp] == 1) {
+         fill(green); 
+       } else {
+         fill(white);
+       }
      }
      
      strokeWeight(1);
@@ -192,7 +200,7 @@ class channel {
     // Collision detected
     if (stations_using > 1)  {
       set_state(2);
-      collisions += 1; println("Collision "+name+" "+tick);
+      collisions += 1;
       //stations_using = 0;
     }
     else if (stations_using == 0) { set_state(0); }  // Idle

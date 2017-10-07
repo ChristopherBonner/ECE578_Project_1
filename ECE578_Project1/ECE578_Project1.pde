@@ -31,6 +31,11 @@ public void draw(){
   
   if (play == true) {
     
+    if (tick >= sim_length) {
+     play = false;
+     
+    }
+    
     // Simulation speed determination
     // Negative values indicate multiple ticks per second
     if (frames_per_tick < 0) {
