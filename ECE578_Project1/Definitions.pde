@@ -6,7 +6,13 @@ color black = color(0);
 color white = color(255);
 color blue = color(53,124,196);
 
-int CW0 = 80; // 4 slots * 20 microseconds/slot
+// SIMULATION PARAMETERS
+int data_frame_size = 1500;    // bytes
+int slot_duration = 20;        // microseconds
+int SIFS_duration = 10;        // microseconds
+int CW0 = 80;                  // 4 slots * 20 microseconds/slot
+int ACK_size = 30;             // bytes
+int transmission_rate = 750000; // 6 Mbps = 750,000 bytes/sec
 
 // 10 seconds * 1,000,000 microseconds/second
 int sim_length = 10 * 1000000;
@@ -65,7 +71,7 @@ void sim_tick(int mode) {
   //println("Sim Tick " + tick);
   tick +=1;
   
-  if (tick % 20 == 0) {
+  if (tick % slot_duration == 0) {
     slot +=1;  
   }
   
@@ -77,7 +83,7 @@ void sim_tick(int mode) {
     //D.process_tick();
     W.process_tick();
     X.process_tick();
-    if (tick % 20 == 0) {
+    if (tick % slot_duration == 0) {
       A.process_slot();
       C.process_slot();
       W.process_slot();

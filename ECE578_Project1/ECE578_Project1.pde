@@ -54,7 +54,7 @@ public void draw(){
   
   draw_scene(scene);
   percentage = tick*100/sim_length;
-  draw_stats(640,25);
+  draw_stats(600,25);
   draw_boxes();
 }
 

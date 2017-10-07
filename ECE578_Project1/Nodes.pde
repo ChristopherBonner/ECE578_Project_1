@@ -72,7 +72,10 @@ class station {
      // Success - we got the channel
      if ((state == 1)&&(bound_channel.state == 1)) {
        set_state(2);
-       transmit_time = 100;  // need to implement actual time to send frame & receive ACK + SIFS
+       int data_trans = (data_frame_size * 1000) / transmission_rate;  // time in microseconds to transmit data frame
+       int ACK_trans = (ACK_size * 1000) / transmission_rate;          // time in microseconds to transmit ACK
+       
+       transmit_time = data_trans + SIFS_duration + ACK_trans;
      }
      
      // Transmission complete
@@ -108,7 +111,7 @@ class station {
    }
    
    // If in transmit mode, decrement the counter
-   if (state == 2) {
+   if ((state == 2)&&(transmit_time>0)) {
      transmit_time -= 1;
    }
    
@@ -163,7 +166,7 @@ class station {
      strokeWeight(1);
      rect(xpos2,ypos2 + disp*7,15,6,1);
      
-     if((disp % 20) == 0) {
+     if((disp % slot_duration) == 0) {
        line(xpos2-7,ypos2 + disp*7,xpos2+25,ypos2+disp*7); 
      }
    }
