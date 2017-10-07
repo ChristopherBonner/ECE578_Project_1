@@ -41,7 +41,7 @@ void draw_scene(int mode) {
  
   // Scenario A
  if (mode == 0) {
-   //W.display();
+   //W.display();//
    X.display();
    A.display();
    B.display();
