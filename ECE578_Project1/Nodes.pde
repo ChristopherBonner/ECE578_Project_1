@@ -72,8 +72,8 @@ class station {
      // Success - we got the channel
      if ((state == 1)&&(bound_channel.state == 1)) {
        set_state(2);
-       int data_trans = (data_frame_size * 1000) / transmission_rate;  // time in microseconds to transmit data frame
-       int ACK_trans = (ACK_size * 1000) / transmission_rate;          // time in microseconds to transmit ACK
+       int data_trans = (data_frame_size * 1000000) / transmission_rate;  // time in microseconds to transmit data frame
+       int ACK_trans = (ACK_size * 1000000) / transmission_rate;          // time in microseconds to transmit ACK
        
        transmit_time = data_trans + SIFS_duration + ACK_trans;
      }
@@ -128,47 +128,50 @@ class station {
    }
  }
  
- void display() {
+ void display(int display_mode) {
    fill(statec);
    ellipse(xpos,ypos,30,30);
    fill(0);
    text(name,xpos-6,ypos+7);
-   text("Buff: "+packet_buffer, xpos-25, ypos-30);
-   text("DIFS: "+difs,          xpos-25, ypos+40);
-   text("Back: "+backoff,       xpos-25, ypos+60);
-   text("Tran: "+transmit_time, xpos-25, ypos+80);
-
-   fill(green);
-   text("Sent: "+sent,          xpos-25, ypos-50);
    
-   
-   // Display upcoming traffic
-   // Put the letter on top
-   fill(black);
-   text(name,xpos2+2,ypos2-3);
-   
-   for (int disp=0; disp<100; disp++) {
-
-     // Array overrun protection
-     if ((tick+disp) > (sim_length-2)) {
-       fill(gray);
+   if (display_mode == 0) {
+       text("Buff: "+packet_buffer, xpos-25, ypos-30);
+       text("DIFS: "+difs,          xpos-25, ypos+40);
+       text("Back: "+backoff,       xpos-25, ypos+60);
+       text("Tran: "+transmit_time, xpos-25, ypos+80);
+    
+       fill(green);
+       text("Sent: "+sent,          xpos-25, ypos-50);
        
-     } else {
-     
-       // Color each tick based on whether a packet is generated at that time.
-       if (arrivals[tick+disp] == 1) {
-         fill(green); 
-       } else {
-         fill(white);
+       
+       // Display upcoming traffic
+       // Put the letter on top
+       fill(black);
+       text(name,xpos2+2,ypos2-3);
+       
+       for (int disp=0; disp<100; disp++) {
+    
+         // Array overrun protection
+         if ((tick+disp) > (sim_length-2)) {
+           fill(gray);
+           
+         } else {
+         
+           // Color each tick based on whether a packet is generated at that time.
+           if (arrivals[tick+disp] == 1) {
+             fill(green); 
+           } else {
+             fill(white);
+           }
+         }
+         
+         strokeWeight(1);
+         rect(xpos2,ypos2 + disp*7,15,6,1);
+         
+         if((disp % slot_duration) == 0) {
+           line(xpos2-7,ypos2 + disp*7,xpos2+25,ypos2+disp*7); 
+         }
        }
-     }
-     
-     strokeWeight(1);
-     rect(xpos2,ypos2 + disp*7,15,6,1);
-     
-     if((disp % slot_duration) == 0) {
-       line(xpos2-7,ypos2 + disp*7,xpos2+25,ypos2+disp*7); 
-     }
    }
  }
 }

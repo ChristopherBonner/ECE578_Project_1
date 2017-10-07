@@ -49,10 +49,10 @@ void draw_scene(int mode) {
  if (mode == 0) {
    //W.display();//
    X.display();
-   A.display();
-   B.display();
-   C.display();
-   D.display();
+   A.display(0);
+   B.display(1);
+   C.display(0);
+   D.display(1);
 
  }
  
@@ -60,9 +60,9 @@ void draw_scene(int mode) {
  else if (mode == 1) {
    Y.display();
    Z.display();
-   A.display();
-   B.display();
-   C.display();
+   A.display(0);
+   B.display(1);
+   C.display(0);
 
  }
 }

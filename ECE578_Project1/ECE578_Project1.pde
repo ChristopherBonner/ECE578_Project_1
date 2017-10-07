@@ -9,7 +9,7 @@ PFont font;
 int tick = 0;
 int scene = 0;
 int frames_per_tick = 100;
-int percentage=0;
+float percentage=0.0;
 boolean play = false;
 
 public void setup(){
@@ -53,8 +53,8 @@ public void draw(){
   }
   
   draw_scene(scene);
-  percentage = tick*100/sim_length;
-  draw_stats(600,25);
+  percentage = tick*100.0/sim_length;
+  draw_stats(536,25);
   draw_boxes();
 }
 
