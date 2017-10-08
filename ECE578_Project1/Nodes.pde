@@ -134,19 +134,14 @@ class station {
    float[] intervals = new float[num_packets];
    for (int i=0; i < num_packets; i++) {
      intervals[i] = (- (1.0/float(fps)) * log(1.0 - uniform[i]));
-     //intervals[i] = (- (1.0/(fps)) * log(1.0 - uniform[i]));
    }
    
    // Convert these floating point fractions-of-seconds to integer microsecond ticks
-   float avg = 0;
    int[] micro_intervals = new int[num_packets];
    for (int i=0; i < num_packets; i++) {
      micro_intervals[i] = int(intervals[i]*1000000);
-     avg += micro_intervals[i];
-     
-     //println(micro_intervals[i]);
    }
-   //println(avg/num_packets);
+
    // Insert the packets into the full length microsecond array
    int j = 0;
    for (int i = 0; i < sim_length; i++) {
@@ -154,9 +149,6 @@ class station {
      arrivals[i] = 1;
      i += micro_intervals[j] - 1;
      j += 1;
-     
-     //arrivals[i] = round(random(1.0)-0.495);
-     //println(i + " | " + uniform[i] + " | " + intervals[i] +" | " + arrivals[i]);
    }
    
    // Sanity check that we generated the correct amount of packets
