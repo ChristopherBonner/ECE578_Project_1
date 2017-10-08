@@ -116,6 +116,11 @@ class station {
  
  void generate_traffic(int fps) {
    
+   // Reset the output array
+   for (int i = 0; i < sim_length; i++) {
+     arrivals[i] = 0;
+   }   
+   
    // Generate an array of values between 0.0 and 1.0
    // Doing 5000 count since we shouldn't need more than that many packets
    int num_packets = 5000;
@@ -129,15 +134,19 @@ class station {
    float[] intervals = new float[num_packets];
    for (int i=0; i < num_packets; i++) {
      intervals[i] = (- (1.0/float(fps)) * log(1.0 - uniform[i]));
+     //intervals[i] = (- (1.0/(fps)) * log(1.0 - uniform[i]));
    }
    
    // Convert these floating point fractions-of-seconds to integer microsecond ticks
+   float avg = 0;
    int[] micro_intervals = new int[num_packets];
    for (int i=0; i < num_packets; i++) {
      micro_intervals[i] = int(intervals[i]*1000000);
-     //println(i + " | " + uniform[i] + " | " + intervals[i] + " | " + micro_intervals[i]);
+     avg += micro_intervals[i];
+     
+     //println(micro_intervals[i]);
    }
-   
+   //println(avg/num_packets);
    // Insert the packets into the full length microsecond array
    int j = 0;
    for (int i = 0; i < sim_length; i++) {
@@ -150,7 +159,13 @@ class station {
      //println(i + " | " + uniform[i] + " | " + intervals[i] +" | " + arrivals[i]);
    }
    
-   println("Generated Traffic for " + name + " with lambda = " + fps);
+   // Sanity check that we generated the correct amount of packets
+   int packet_count = 0;
+   for (int i = 0; i < sim_length; i++) {
+     if (arrivals[i] == 1) {packet_count +=1;}
+   }
+   
+   println("Generated "+packet_count+" packets for " + name + " with lambda = " + fps);
  }
  
  void display(int display_mode) {

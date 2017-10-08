@@ -123,7 +123,7 @@ void draw_boxes() {
   noFill();
   rect(9,40,94,60); // Scenario
   rect(117,40,158,60); // Strategy
-  rect(295,40,131,140); // Simspeed
+  rect(295,40,131,160); // Simspeed
   rect(460,40,90,100); // Simspeed 
   rect(565,40,90,100); // Simspeed 
 }

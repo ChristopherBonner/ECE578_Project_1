@@ -90,6 +90,11 @@ public void fpt_3_clicked(GOption source, GEvent event) { //_CODE_:fpt_3:507343:
   frames_per_tick = -3;
 } //_CODE_:fpt_3:507343:
 
+public void fpt4_clicked(GOption source, GEvent event) { //_CODE_:fpt_4:802459:
+  println("fpt_4 - GOption >> GEvent." + event + " @ " + millis());
+  frames_per_tick = -4;
+} //_CODE_:fpt_4:802459:
+
 public void A_50_clicked(GOption source, GEvent event) { //_CODE_:A_50:955675:
   println("A_50 - GOption >> GEvent." + event + " @ " + millis());
   lambda_A = 50;
@@ -199,42 +204,48 @@ public void createGUI(){
   reset.setLocalColorScheme(GCScheme.RED_SCHEME);
   reset.addEventHandler(this, "reset_click");
   Playback_Speed = new GToggleGroup();
-  fpt1 = new GOption(this, 300, 120, 120, 20);
+  fpt1 = new GOption(this, 300, 140, 120, 20);
   fpt1.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   fpt1.setText("1 frame/tick");
   fpt1.setTextBold();
   fpt1.setOpaque(false);
   fpt1.addEventHandler(this, "fpt1_clicked");
-  fpt10 = new GOption(this, 300, 140, 120, 20);
+  fpt10 = new GOption(this, 300, 160, 120, 20);
   fpt10.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   fpt10.setText("10 frames/tick");
   fpt10.setTextBold();
   fpt10.setOpaque(false);
   fpt10.addEventHandler(this, "fpt10_clicked");
-  fpt100 = new GOption(this, 300, 160, 120, 20);
+  fpt100 = new GOption(this, 300, 180, 120, 20);
   fpt100.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   fpt100.setText("100 frames/tick");
   fpt100.setTextBold();
   fpt100.setOpaque(false);
   fpt100.addEventHandler(this, "fpt100_clicked");
-  fpt_1 = new GOption(this, 300, 100, 120, 20);
+  fpt_1 = new GOption(this, 300, 120, 120, 20);
   fpt_1.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   fpt_1.setText("1 frame/10 ticks");
   fpt_1.setTextBold();
   fpt_1.setOpaque(false);
   fpt_1.addEventHandler(this, "fpt_1_clicked");
-  fpt_2 = new GOption(this, 300, 80, 120, 20);
+  fpt_2 = new GOption(this, 300, 100, 120, 20);
   fpt_2.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   fpt_2.setText("1 frame/100 ticks");
   fpt_2.setTextBold();
   fpt_2.setOpaque(false);
   fpt_2.addEventHandler(this, "fpt_2_clicked1");
-  fpt_3 = new GOption(this, 300, 60, 140, 20);
+  fpt_3 = new GOption(this, 300, 80, 140, 20);
   fpt_3.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
   fpt_3.setText("1 frame/1000 ticks");
   fpt_3.setTextBold();
   fpt_3.setOpaque(false);
   fpt_3.addEventHandler(this, "fpt_3_clicked");
+  fpt_4 = new GOption(this, 300, 60, 140, 20);
+  fpt_4.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  fpt_4.setText("1 frame/10000 ticks");
+  fpt_4.setTextBold();
+  fpt_4.setOpaque(false);
+  fpt_4.addEventHandler(this, "fpt4_clicked");
   Playback_Speed.addControl(fpt1);
   Playback_Speed.addControl(fpt10);
   Playback_Speed.addControl(fpt100);
@@ -242,6 +253,7 @@ public void createGUI(){
   Playback_Speed.addControl(fpt_1);
   Playback_Speed.addControl(fpt_2);
   Playback_Speed.addControl(fpt_3);
+  Playback_Speed.addControl(fpt_4);
   A_speed = new GToggleGroup();
   A_50 = new GOption(this, 470, 60, 70, 20);
   A_50.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
@@ -351,6 +363,7 @@ GOption fpt100;
 GOption fpt_1; 
 GOption fpt_2; 
 GOption fpt_3; 
+GOption fpt_4; 
 GToggleGroup A_speed; 
 GOption A_50; 
 GOption A_100; 
