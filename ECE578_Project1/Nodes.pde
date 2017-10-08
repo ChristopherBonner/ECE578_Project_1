@@ -42,9 +42,11 @@ class station {
   if (input == 3) { statec = yellow;   state = 3; }
   // DIFS
   if (input == 4) { statec = blue;   state = 4; }
+  // RTS
+  if (input == 5) { statec = yellow; state = 5; }
  }
  
- void process_slot() {
+ void process_slot(int mode) {
    
    // If there's nothing to transmit, set station idle
    if (packet_buffer == 0) { set_state(0); return;}
@@ -72,7 +74,6 @@ class station {
        k_coll += 1;
        int CW = constrain(int(pow(2, k_coll)*(CW0-1)),0,CWmax);
        backoff = round(random(0, CW * slot_duration     ));
-       println(name + " " + k_coll + " CW: "+CW+" B: "+backoff);
        bound_channel.stations_using = 0;
        set_state(3);
      }
@@ -99,7 +100,7 @@ class station {
    }
  }
  
- void process_tick() {
+ void process_tick(int mode) {
    
    // Add any new packets to the waiting list
    // Includes array overflow protection
@@ -123,6 +124,11 @@ class station {
    // If in transmit mode, decrement the counter
    if ((state == 2)&&(transmit_time>0)) {
      transmit_time -= 1;
+   }
+   
+   // Waiting for RTS
+   if (mode == 1) {
+     
    }
    
  }
@@ -253,16 +259,25 @@ class channel {
     set_state(0);
   }
   
-  void process_slot() {
-    // Collision detected
-    if (stations_using > 1)  {
-      set_state(2);
-      collisions += 1;
-      //stations_using = 0;
+  void process_slot(int mode) {
+    
+    // Collision Avoidance method
+    if (mode == 0) {
+    
+      // Collision detected
+      if (stations_using > 1)  {
+        set_state(2);
+        collisions += 1;
+        //stations_using = 0;
+      }
+      else if (stations_using == 0) { set_state(0); }  // Idle
+      else if (stations_using == 1) { set_state(1); }  // In use
     }
-    else if (stations_using == 0) { set_state(0); }  // Idle
-    else if (stations_using == 1) { set_state(1); }  // In use
-
+    
+    // Virtual Carrier Sensing
+    else if (mode == 1) {
+      
+    }
   }
   
   void process_tick(){
@@ -278,6 +293,8 @@ class channel {
    if (input == 1) { statec = green; state = 1; statestr="BUSY";}
    // Collision
    if (input == 2) { statec = red; state = 2; statestr="COLLISION";}
+   // RTS
+   if (input == 3) { statec = blue; state = 3; statestr="RTS";}
   }
   
   void display() {

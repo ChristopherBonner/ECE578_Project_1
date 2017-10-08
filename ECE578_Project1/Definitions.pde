@@ -70,7 +70,7 @@ void draw_scene(int mode) {
  }
 }
 
-void sim_tick(int mode) {
+void sim_tick(int scene) {
   //println("Sim Tick " + tick);
   tick +=1;
   
@@ -79,29 +79,34 @@ void sim_tick(int mode) {
   }
   
   // Scenario A
-  if (mode == 0) {
-    A.process_tick();
-    //B.process_tick();
-    C.process_tick();
-    //D.process_tick();
+  if (scene == 0) {
+    A.process_tick(scene);
+    C.process_tick(scene);
+
     W.process_tick();
     X.process_tick();
+    
     if (tick % slot_duration == 0) {
-      A.process_slot();
-      C.process_slot();
-      W.process_slot();
-      X.process_slot();
-      A.process_slot(); // Have to repeat the process twice to see if collision or success occurred that slot
-      C.process_slot(); // Have to repeat the process twice to see if collision or success occurred that slot
+      A.process_slot(scene);
+      C.process_slot(scene);
+      X.process_slot(scene);
+      A.process_slot(scene); // Have to repeat the process twice to see if collision or success occurred that slot
+      C.process_slot(scene); // Have to repeat the process twice to see if collision or success occurred that slot
     }
   }
+  
   // Scenario B
-  else if (mode == 1) {
-    A.process_tick();
-    B.process_tick();
-    C.process_tick();
-    //Y.process_tick();
-    //Z.process_tick();
+  else if (scene == 1) {
+    A.process_tick(scene);
+    C.process_tick(scene);
+
+    if (tick % slot_duration == 0) {
+      A.process_slot(scene);
+      C.process_slot(scene);
+      Y.process_slot(scene);
+      Z.process_slot(scene);
+    }
+
   }
 }
 
