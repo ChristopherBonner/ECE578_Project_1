@@ -92,34 +92,50 @@ public void fpt_3_clicked(GOption source, GEvent event) { //_CODE_:fpt_3:507343:
 
 public void A_50_clicked(GOption source, GEvent event) { //_CODE_:A_50:955675:
   println("A_50 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_A = 50;
+  A.generate_traffic(lambda_A);
 } //_CODE_:A_50:955675:
 
 public void A_100_clicked(GOption source, GEvent event) { //_CODE_:A_100:295887:
   println("A_100 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_A = 100;
+  A.generate_traffic(lambda_A);
 } //_CODE_:A_100:295887:
 
 public void A_200_clicked(GOption source, GEvent event) { //_CODE_:A_200:441133:
   println("A_200 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_A = 200;
+  A.generate_traffic(lambda_A);
 } //_CODE_:A_200:441133:
 
 public void A_300_clicked(GOption source, GEvent event) { //_CODE_:A_300:840264:
   println("A_300 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_A = 300;
+  A.generate_traffic(lambda_A);
 } //_CODE_:A_300:840264:
 
 public void C_50_clicked(GOption source, GEvent event) { //_CODE_:C_50:983143:
   println("C_50 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_C = 50;
+  C.generate_traffic(lambda_C);
 } //_CODE_:C_50:983143:
 
 public void C_100_clicked(GOption source, GEvent event) { //_CODE_:C_100:247137:
   println("C_100 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_C = 100;
+  C.generate_traffic(lambda_C);
 } //_CODE_:C_100:247137:
 
 public void C_200_clicked(GOption source, GEvent event) { //_CODE_:C_200:804391:
   println("C_200 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_C = 200;
+  C.generate_traffic(lambda_C);
 } //_CODE_:C_200:804391:
 
 public void C_300_clicked(GOption source, GEvent event) { //_CODE_:C_300:803181:
   println("C_300 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_C = 300;
+  C.generate_traffic(lambda_C);
 } //_CODE_:C_300:803181:
 
 

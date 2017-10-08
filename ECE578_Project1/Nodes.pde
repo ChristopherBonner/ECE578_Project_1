@@ -9,8 +9,6 @@ class station {
  channel bound_channel;
  
  // Array to contain the arrival times for packets
- float[] uniform = new float[sim_length];
- int[] intervals = new int[sim_length];
  int[] arrivals = new int[sim_length];
  
  // Constructor
@@ -22,7 +20,6 @@ class station {
   xpos2 = ix2;
   ypos2 = iy2;
   backoff = 0;
-  lambda = 100;
   difs = 40;
   sent = 0;
  }
@@ -117,15 +114,43 @@ class station {
    
  }
  
- void generate_traffic() {
-   println("Generated Traffic for " + name);
+ void generate_traffic(int fps) {
    
-   for (int i=0; i < sim_length; i++) {
+   // Generate an array of values between 0.0 and 1.0
+   // Doing 5000 count since we shouldn't need more than that many packets
+   int num_packets = 5000;
+   float[] uniform = new float[num_packets];
+   for (int i=0; i < num_packets; i++) {
      uniform[i] = random(0.0, 1.0);
-     intervals[i] = int(- (1.0/lambda) * log(1.0 - uniform[i]));
-     arrivals[i] = round(random(1.0)-0.495);
+   }
+
+   // Generate a series of X exponentially distributed values
+   // These end up being the time distance between each successive packet
+   float[] intervals = new float[num_packets];
+   for (int i=0; i < num_packets; i++) {
+     intervals[i] = (- (1.0/float(fps)) * log(1.0 - uniform[i]));
+   }
+   
+   // Convert these floating point fractions-of-seconds to integer microsecond ticks
+   int[] micro_intervals = new int[num_packets];
+   for (int i=0; i < num_packets; i++) {
+     micro_intervals[i] = int(intervals[i]*1000000);
+     //println(i + " | " + uniform[i] + " | " + intervals[i] + " | " + micro_intervals[i]);
+   }
+   
+   // Insert the packets into the full length microsecond array
+   int j = 0;
+   for (int i = 0; i < sim_length; i++) {
+     
+     arrivals[i] = 1;
+     i += micro_intervals[j] - 1;
+     j += 1;
+     
+     //arrivals[i] = round(random(1.0)-0.495);
      //println(i + " | " + uniform[i] + " | " + intervals[i] +" | " + arrivals[i]);
    }
+   
+   println("Generated Traffic for " + name + " with lambda = " + fps);
  }
  
  void display(int display_mode) {

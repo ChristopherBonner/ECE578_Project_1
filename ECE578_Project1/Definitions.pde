@@ -11,6 +11,8 @@ int data_frame_size = 1500;    // bytes
 int slot_duration = 20;        // microseconds
 int SIFS_duration = 10;        // microseconds
 int CW0 = 80;                  // 4 slots * 20 microseconds/slot
+int lambda_A = 50;
+int lambda_C = 50;
 int ACK_size = 30;             // bytes
 int transmission_rate = 750000; // 6 Mbps = 750,000 bytes/sec
 
@@ -28,8 +30,8 @@ void setup_scene_A() {
   C = new station("C", 150, 600, X, 890, 120);
   D = new station("D", 500, 600, X, 920, 120);
   
-  A.generate_traffic();
-  C.generate_traffic();
+  A.generate_traffic(lambda_A);
+  C.generate_traffic(lambda_C);
 }
 
 void setup_scene_B() {
@@ -39,8 +41,8 @@ void setup_scene_B() {
   B = new station("B", 400, 300, Y, 870, 120);  // TODO: Must be double channel bound!!!
   C = new station("C", 700, 300, Z, 900, 120);
 
-  A.generate_traffic();
-  C.generate_traffic();
+  A.generate_traffic(lambda_A);
+  C.generate_traffic(lambda_C);
 }
 
 void draw_scene(int mode) {
