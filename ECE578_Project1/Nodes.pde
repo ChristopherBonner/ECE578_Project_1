@@ -45,6 +45,7 @@ class station {
  }
  
  void process_slot() {
+   
    // If there's nothing to transmit, set station idle
    if (packet_buffer == 0) { set_state(0); return;}
    
