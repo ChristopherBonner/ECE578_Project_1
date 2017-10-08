@@ -104,10 +104,26 @@ void sim_tick(int mode) {
   }
 }
 
-void reset_everything(){
- println("RESET EVERYTHING - TODO!!!!");
+void reset_everything(int scene){
+ println("RESET EVERYTHING");
  tick = 0;
  slot = 0;
+ 
+ if (scene == 0) {
+   A.reset();
+   B.reset();
+   C.reset();
+   D.reset();
+   X.reset();
+ } else if (scene == 1) {
+   A.reset();
+   B.reset();
+   C.reset();
+   Y.reset();
+   Z.reset();
+ }
+ 
+
 }
 
 void draw_stats(int x, int y) {

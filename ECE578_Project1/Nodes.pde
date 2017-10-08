@@ -24,6 +24,12 @@ class station {
   sent = 0;
  }
  
+ void reset() {
+   sent = 0;
+   packet_buffer = 0;
+   set_state(0);
+ }
+ 
  void set_state(int input){
   // Idle state - no packet waiting
   if (input == 0) { statec = gray;   state = 0;}
@@ -232,6 +238,12 @@ class channel {
    y1 = iy1;
    y2 = iy2;
    statestr = "IDLE";
+  }
+  
+  void reset() {
+    collisions = 0;
+    stations_using = 0;
+    set_state(0);
   }
   
   void process_slot() {
