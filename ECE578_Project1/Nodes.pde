@@ -7,6 +7,7 @@ class station {
  int packet_buffer = 0;
  int backoff, difs, transmit_time, sent;
  channel bound_channel;
+ int k_coll = 0; // # of sequential collisions
  
  // Array to contain the arrival times for packets
  int[] arrivals = new int[sim_length];
@@ -55,7 +56,7 @@ class station {
      
      // If the DIFS countdown is complete, enter backoff mode
      if ((state == 4)&&(difs <= 0)) {
-       backoff = round(random(0,CW0));
+       backoff = round(random(0,(CW0-1)*slot_duration));
        set_state(3);
      }
      
@@ -67,7 +68,10 @@ class station {
      
      // Collision !!!
      if ((state == 1)&&(bound_channel.state == 2)) {
-       backoff = round(random(0,CW0)); // need exponential backoff added here
+       k_coll += 1;
+       int CW = constrain(int(pow(2, k_coll)*(CW0-1)),0,CWmax);
+       backoff = round(random(0, CW * slot_duration     ));
+       println(name + " " + k_coll + " CW: "+CW+" B: "+backoff);
        bound_channel.stations_using = 0;
        set_state(3);
      }
@@ -79,6 +83,8 @@ class station {
        int ACK_trans = (ACK_size * 1000000) / transmission_rate;          // time in microseconds to transmit ACK
        
        transmit_time = data_trans + SIFS_duration + ACK_trans;
+       
+       k_coll = 0;
      }
      
      // Transmission complete

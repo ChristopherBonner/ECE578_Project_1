@@ -10,11 +10,12 @@ color blue = color(53,124,196);
 int data_frame_size = 1500;    // bytes
 int slot_duration = 20;        // microseconds
 int SIFS_duration = 10;        // microseconds
-int CW0 = 80;                  // 4 slots * 20 microseconds/slot
+int CW0 = 4;                   // slots
 int lambda_A = 50;
 int lambda_C = 50;
 int ACK_size = 30;             // bytes
 int transmission_rate = 750000; // 6 Mbps = 750,000 bytes/sec
+int CWmax = 1024;
 
 // 10 seconds * 1,000,000 microseconds/second
 int sim_length = 10 * 1000000;
