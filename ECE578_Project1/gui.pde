@@ -199,13 +199,13 @@ public void createGUI(){
   Scenario = new GToggleGroup();
   Scenario_A = new GOption(this, 10, 60, 100, 20);
   Scenario_A.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
-  Scenario_A.setText("Concurrent");
+  Scenario_A.setText("Scenario A");
   Scenario_A.setTextBold();
   Scenario_A.setOpaque(false);
   Scenario_A.addEventHandler(this, "ScenA_clicked");
   Scenario_B = new GOption(this, 10, 80, 100, 20);
   Scenario_B.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
-  Scenario_B.setText("Hidden");
+  Scenario_B.setText("Scenario B");
   Scenario_B.setTextBold();
   Scenario_B.setOpaque(false);
   Scenario_B.addEventHandler(this, "ScenB_clicked");

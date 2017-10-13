@@ -32,13 +32,13 @@ class station {
   sent = 0;
   rts = 0;
   partner = ipartner;
-  println(partner);
  }
  
  void reset() {
    sent = 0;
    packet_buffer = 0;
    set_state(0);
+   //collisions = 0;
  }
  
  void set_state(int input){
@@ -229,10 +229,10 @@ class station {
            transmit_time = data_trans + SIFS_duration + ACK_trans;
            
            if (name == "A") {
-             C.defer = transmit_time + 10;
+             C.defer = transmit_time;
              C.set_state(4);
            } else {
-             A.defer = transmit_time + 10;
+             A.defer = transmit_time;
              A.set_state(4);
            }
            set_state(3);

@@ -106,6 +106,7 @@ void reset_everything(char scene){
    C.reset();
    D.reset();
    X.reset();
+   W.reset();
  } else if (scene == 'B') {
    A.reset();
    B.reset();
