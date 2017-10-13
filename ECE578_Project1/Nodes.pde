@@ -5,9 +5,10 @@ class station {
  color statec = gray;
  int state = 0;
  int packet_buffer = 0;
- int backoff, difs, transmit_time, sent;
+ int backoff, difs, transmit_time, sent, rts;
  channel bound_channel;
  int k_coll = 0; // # of sequential collisions
+ int packet_count = 0;
  
  // Array to contain the arrival times for packets
  int[] arrivals = new int[sim_length];
@@ -23,6 +24,7 @@ class station {
   backoff = 0;
   difs = 40;
   sent = 0;
+  rts = 0;
  }
  
  void reset() {
@@ -42,9 +44,12 @@ class station {
   if (input == 3) { statec = yellow;   state = 3; }
   // DIFS
   if (input == 4) { statec = blue;   state = 4; }
+  // RTS
+  if (input == 5) { statec = yellow; state = 5; }
  }
  
  void process_slot() {
+   
    // If there's nothing to transmit, set station idle
    if (packet_buffer == 0) { set_state(0); return;}
    
@@ -71,7 +76,6 @@ class station {
        k_coll += 1;
        int CW = constrain(int(pow(2, k_coll)*(CW0-1)),0,CWmax);
        backoff = round(random(0, CW * slot_duration     ));
-       println(name + " " + k_coll + " CW: "+CW+" B: "+backoff);
        bound_channel.stations_using = 0;
        set_state(3);
      }
@@ -98,6 +102,69 @@ class station {
    }
  }
  
+  void process_slot_vc() {
+    // If there's nothing to transmit, set station idle
+   if (packet_buffer == 0) { set_state(0); return;}
+   
+   // If there are packet(s) waiting, start going through the transmit process
+   else if (packet_buffer > 0) {
+     
+     // If we were idle, lets enter RTS
+     if ((state == 0)&&(bound_channel.state!=1)) {
+       set_state(5);
+       rts = ((RTS_size+CTS_size) * 1000000) / transmission_rate;
+       bound_channel.set_state(3);}
+   }
+   
+   // If the RTS countdown is complete, enter ready-to-transmit
+     if ((state == 5)&&(rts <= 0)&&(bound_channel.state!=1)) {
+       //backoff = round(random(0,(CW0-1)*slot_duration));
+       //bound_channel.stations_using += 1;
+       set_state(1);
+     }
+   
+   // If the backoff counter runs out, attempt transmission
+     if ((state == 3)&&(backoff <=0)) {
+       set_state(5);
+       //bound_channel.stations_using += 1;
+     }
+   
+   // Collision !!!
+     if ((state == 1)&&(bound_channel.state == 2)) {
+       k_coll += 1;
+       int CW = constrain(int(pow(2, k_coll)*(CW0-1)),0,CWmax);
+       backoff = round(random(0, CW * slot_duration     ));
+       //bound_channel.stations_using = 0;
+       set_state(3);
+     }
+     
+   // Success - we got the channel
+   if ((state == 1)&&(bound_channel.state == 1)) {
+     set_state(2);
+     int data_trans = (data_frame_size * 1000000) / transmission_rate;  // time in microseconds to transmit data frame
+     int ACK_trans = (ACK_size * 1000000) / transmission_rate;          // time in microseconds to transmit ACK
+     
+     transmit_time = data_trans + SIFS_duration + ACK_trans;
+     
+     Y.set_state(1);
+     Z.set_state(1);
+     
+     k_coll = 0;
+   }
+     
+   // Transmission complete
+     if ((state == 2)&&(transmit_time <= 0)) {
+       sent += 1;
+       packet_buffer -=1;
+       bound_channel.set_state(0);
+       Y.set_state(0);
+       Z.set_state(0);
+       bound_channel.stations_using = 0;
+       set_state(0);
+     }
+  }
+ 
+ 
  void process_tick() {
    
    // Add any new packets to the waiting list
@@ -123,7 +190,35 @@ class station {
    if ((state == 2)&&(transmit_time>0)) {
      transmit_time -= 1;
    }
+
+ }
+ 
+  void process_tick_vc() {
    
+   // Add any new packets to the waiting list
+   // Includes array overflow protection
+   if ((tick<sim_length)&&(arrivals[tick] == 1)) {
+     packet_buffer +=1;
+   }
+   
+   // If we're in RTS mode, decrement the counter for each tick
+   if ((state == 5) && (rts>0)) {
+     rts -=1; 
+   }
+   
+   // If in Backoff mode, decrement for any idle tick
+   // Note that the bound channel collision state is also valid for backoff
+   if ((state == 3)&&((bound_channel.state == 0)||(bound_channel.state == 2))) {
+     if(backoff > 0) {
+       backoff -= 1;
+     }
+   }
+   
+   // If in transmit mode, decrement the counter
+   if ((state == 2)&&(transmit_time>0)) {
+     transmit_time -= 1;
+   }
+
  }
  
  void generate_traffic(int fps) {
@@ -164,7 +259,7 @@ class station {
    }
    
    // Sanity check that we generated the correct amount of packets
-   int packet_count = 0;
+   packet_count = 0;
    for (int i = 0; i < sim_length; i++) {
      if (arrivals[i] == 1) {packet_count +=1;}
    }
@@ -178,45 +273,49 @@ class station {
    fill(0);
    text(name,xpos-6,ypos+7);
    
-   if (display_mode == 0) {
-       text("Buff: "+packet_buffer, xpos-25, ypos-30);
-       text("DIFS: "+difs,          xpos-25, ypos+40);
-       text("Back: "+backoff,       xpos-25, ypos+60);
-       text("Tran: "+transmit_time, xpos-25, ypos+80);
-    
-       fill(green);
-       text("Sent: "+sent,          xpos-25, ypos-50);
-       
-       
-       // Display upcoming traffic
-       // Put the letter on top
-       fill(black);
-       text(name,xpos2+2,ypos2-3);
-       
-       for (int disp=0; disp<100; disp++) {
-    
-         // Array overrun protection
-         if ((tick+disp) > (sim_length-2)) {
-           fill(gray);
-           
-         } else {
-         
-           // Color each tick based on whether a packet is generated at that time.
-           if (arrivals[tick+disp] == 1) {
-             fill(green); 
-           } else {
-             fill(white);
-           }
-         }
-         
-         strokeWeight(1);
-         rect(xpos2,ypos2 + disp*7,15,6,1);
-         
-         if((disp % slot_duration) == 0) {
-           line(xpos2-7,ypos2 + disp*7,xpos2+25,ypos2+disp*7); 
-         }
-       }
+   if (display_mode == 0) {   
+     text("DIFS: "+difs,          xpos-25, ypos+40);
+   } else if (display_mode == 1) {
+     text(" RTS: "+rts, xpos-25,ypos+40);  
    }
+   
+   text("Buff: "+packet_buffer, xpos-25, ypos-30);
+   text("Back: "+backoff,       xpos-25, ypos+60);
+   text("Tran: "+transmit_time, xpos-25, ypos+80);
+   fill(green);
+       text("Sent: "+sent,          xpos-25, ypos-50);
+   
+   // Display upcoming traffic
+   // Put the letter on top
+   fill(black);
+   text(name,xpos2+2,ypos2-3);
+   
+   for (int disp=0; disp<100; disp++) {
+
+     // Array overrun protection
+     if ((tick+disp) > (sim_length-2)) {
+       fill(gray);
+       
+     } else {
+     
+       // Color each tick based on whether a packet is generated at that time.
+       if (arrivals[tick+disp] == 1) {
+         fill(green); 
+       } else {
+         fill(white);
+       }
+     }
+     
+     strokeWeight(1);
+     rect(xpos2,ypos2 + disp*7,15,6,1);
+     
+     if((disp % slot_duration) == 0) {
+       line(xpos2-7,ypos2 + disp*7,xpos2+25,ypos2+disp*7); 
+     }
+   }
+       
+       
+       
  }
 }
 
@@ -235,15 +334,18 @@ class channel {
   int collisions=0;
   float x1,x2,y1,y2;
   String name, statestr;
+  station stat_1, stat_2;
   
   // Constructor
-  channel(String iname, float ix1, float iy1, float ix2, float iy2) {
+  channel(String iname, float ix1, float iy1, float ix2, float iy2, station st1, station st2) {
    name = iname;
    x1 = ix1;
    x2 = ix2;
    y1 = iy1;
    y2 = iy2;
    statestr = "IDLE";
+   stat_1 = st1;
+   stat_2 = st2;
   }
   
   void reset() {
@@ -253,16 +355,53 @@ class channel {
   }
   
   void process_slot() {
-    // Collision detected
-    if (stations_using > 1)  {
-      set_state(2);
-      collisions += 1;
-      //stations_using = 0;
-    }
-    else if (stations_using == 0) { set_state(0); }  // Idle
-    else if (stations_using == 1) { set_state(1); }  // In use
+    
+      // Collision detected
+      if (stations_using > 1)  {
+        set_state(2);
+        collisions += 1;
+        //stations_using = 0;
+      }
+      else if (stations_using == 0) { set_state(0); }  // Idle
+      else if (stations_using == 1) { set_state(1); }  // In use
 
   }
+  
+  void syncronize(){
+    
+  }
+  
+  void process_slot_vc() {
+      //println(name+" | "+A.state + " " + C.state);
+      //println("Link " + name + " | " + stat_1.state + " | " + stat_2.state);
+      if (state==2) {
+        set_state(0);
+      }
+      
+      // Collision detected
+      if ((A.state==1)&&(C.state==1)) {
+        collisions += 1; //<>//
+        set_state(2);
+        //println("collision");
+      }
+      
+      
+      // One, and only one, station is ready to transmit
+      if (((A.state==1)&&(C.state!=1))||((A.state!=1)&&(C.state==1))) {
+        set_state(1);
+      }
+      
+      //if (stations_using > 1)  {
+      //  set_state(2);
+      //  collisions += 1;
+      //  //stations_using = 0;
+      //}
+      
+      //else if (stations_using == 0) { set_state(0); }  // Idle
+      //else if (stations_using == 1) { set_state(1); }  // In use
+
+  }
+  
   
   void process_tick(){
     
@@ -277,6 +416,8 @@ class channel {
    if (input == 1) { statec = green; state = 1; statestr="BUSY";}
    // Collision
    if (input == 2) { statec = red; state = 2; statestr="COLLISION";}
+   // RTS
+   if (input == 3) { statec = blue; state = 3; statestr="RTS";}
   }
   
   void display() {
