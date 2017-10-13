@@ -109,14 +109,14 @@ class station {
    else if (packet_buffer > 0) {
      
      // If we were idle, lets enter RTS
-     if (state == 0) {
+     if ((state == 0)&&(bound_channel.state!=1)) {
        set_state(5);
        rts = ((RTS_size+CTS_size) * 1000000) / transmission_rate;
        bound_channel.set_state(3);}
    }
    
    // If the RTS countdown is complete, enter ready-to-transmit
-     if ((state == 5)&&(rts <= 0)) {
+     if ((state == 5)&&(rts <= 0)&&(bound_channel.state!=1)) {
        //backoff = round(random(0,(CW0-1)*slot_duration));
        //bound_channel.stations_using += 1;
        set_state(1);
@@ -124,7 +124,7 @@ class station {
    
    // If the backoff counter runs out, attempt transmission
      if ((state == 3)&&(backoff <=0)) {
-       set_state(1);
+       set_state(5);
        //bound_channel.stations_using += 1;
      }
    
@@ -144,6 +144,9 @@ class station {
      int ACK_trans = (ACK_size * 1000000) / transmission_rate;          // time in microseconds to transmit ACK
      
      transmit_time = data_trans + SIFS_duration + ACK_trans;
+     
+     Y.set_state(1);
+     Z.set_state(1);
      
      k_coll = 0;
    }
@@ -370,6 +373,9 @@ class channel {
   void process_slot_vc() {
       //println(name+" | "+A.state + " " + C.state);
       //println("Link " + name + " | " + stat_1.state + " | " + stat_2.state);
+      if (state==2) {
+        set_state(0);
+      }
       
       // Collision detected
       if ((A.state==1)&&(C.state==1)) {
