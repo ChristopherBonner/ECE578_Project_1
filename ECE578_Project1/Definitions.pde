@@ -155,3 +155,25 @@ void draw_boxes() {
   rect(460,40,90,100); // Simspeed 
   rect(565,40,90,100); // Simspeed 
 }
+
+void print_statistics() {
+  
+  // Fixes a stupid off-by-one error
+  A.sent += 1;
+  C.sent += 1;
+  
+  // Calculate throughput
+  // (Frames sent * framesize_in_bytes * 8bits/byte) / (10 seconds * 1000)
+  int throughput_A = (A.sent * data_frame_size * 8) / (10 * 1000);
+  int throughput_C = (C.sent * data_frame_size * 8) / (10 * 1000);
+  
+  println("=============================================================================================");
+  println("Node A sent " + A.sent + " of " + A.packet_count + " generated with lambda = " + lambda_A + "   T = " + throughput_A + " Kbps");
+  println("Node B sent " + C.sent + " of " + C.packet_count + " generated with lambda = " + lambda_C + "   T = " + throughput_C + " Kbps");
+  if (scene == 0) {
+    println("Collisions X = " + X.collisions);
+  } else {
+    println("Collisions Y = " + Y.collisions);
+  }
+  println("=============================================================================================");
+}

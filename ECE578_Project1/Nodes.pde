@@ -8,6 +8,7 @@ class station {
  int backoff, difs, transmit_time, sent, rts;
  channel bound_channel;
  int k_coll = 0; // # of sequential collisions
+ int packet_count = 0;
  
  // Array to contain the arrival times for packets
  int[] arrivals = new int[sim_length];
@@ -258,7 +259,7 @@ class station {
    }
    
    // Sanity check that we generated the correct amount of packets
-   int packet_count = 0;
+   packet_count = 0;
    for (int i = 0; i < sim_length; i++) {
      if (arrivals[i] == 1) {packet_count +=1;}
    }
@@ -381,7 +382,7 @@ class channel {
       if ((A.state==1)&&(C.state==1)) {
         collisions += 1; //<>//
         set_state(2);
-        println("collision");
+        //println("collision");
       }
       
       

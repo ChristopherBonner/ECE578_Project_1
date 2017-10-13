@@ -33,6 +33,7 @@ public void draw(){
     
     if (tick >= sim_length) {
      play = false;
+     print_statistics();
     }
     
     // Simulation speed determination
