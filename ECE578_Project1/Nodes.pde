@@ -2,8 +2,9 @@
 class station {
  String name;
  float xpos, ypos, xpos2, ypos2, lambda;
- color statec = gray;
+ color statec = white;
  int state = 0;
+ String statestr = "IDLE";
  int packet_buffer = 0;
  int backoff, difs, transmit_time, sent, rts;
  channel bound_channel;
@@ -34,18 +35,88 @@ class station {
  }
  
  void set_state(int input){
-  // Idle state - no packet waiting
-  if (input == 0) { statec = gray;   state = 0;}
-  // Ready to Transmit state
-  if (input == 1) { statec = yellow; state = 1;}
-  // Transmit
-  if (input == 2) { statec = green;  state = 2;}
-  // Backoff
-  if (input == 3) { statec = yellow;   state = 3; }
-  // DIFS
-  if (input == 4) { statec = blue;   state = 4; }
-  // RTS
-  if (input == 5) { statec = yellow; state = 5; }
+   
+   switch(input)
+   {
+     case 0: // IDLE
+       state = 0; statec = white; statestr = "IDLE"; break;
+       
+     case 1: // DIFS
+       state = 1; statec = blue; statestr = "DIFS"; break;
+       
+     case 2: // BACKOFF
+       state = 2; statec = yellow; statestr = "BACKOFF"; break;
+       
+     case 3: // ATTEMPT
+       state = 3; statec = green; statestr = "ATTEMPT"; break;
+       
+     case 4: // DEFER
+       state = 4; statec = gray; statestr = "DEFER"; break;
+     
+     case 5: // RTS-CTS
+       state = 5; statec = blue; statestr = "RTS-CTS"; break;
+   }
+ }
+ 
+ void tick(String mode) {
+   if (mode == "CA") {
+     tick_CSMA_CA();
+   } else if (mode == "VCS") {
+     tick_CSMA_VCS();
+   }
+ }
+ 
+ void tick_CSMA_CA() {
+   
+   // Add any new packets to the waiting list
+   // Includes array overflow protection
+   if ((tick<sim_length)&&(arrivals[tick] == 1)) {
+     packet_buffer +=1;
+   }
+   
+   switch(state)
+   {
+     case 0: // IDLE
+       // If there's nothing to transmit, do nothing
+       if (packet_buffer == 0) { }
+       // If packet(s) ready, set the DIFS time and switch to DIFS
+       else if (packet_buffer > 0) { set_state(1); difs = DIFS_Duration;}
+       break;
+       
+     case 1: // DIFS
+       // Decrement the difs counter
+       if (difs > 0) { difs -= 1; }
+       // When difs time runs out, choose a backoff time and go to BACKOFF
+       if (difs <= 0) {
+         backoff = round(random(0,(CW0-1)*slot_duration));
+         set_state(2);
+       }
+       break;
+       
+     case 2: // BACKOFF
+       // Decrement the backoff counter
+       if (backoff > 0) { backoff -= 1; }
+       // If the backoff timer expires, try to transmit
+       if (backoff <= 0) {
+         
+       }
+       break;
+       
+     case 3: // ATTEMPT
+     
+       break;
+   }
+ }
+ 
+ void tick_CSMA_VCS() {
+   
+   // Add any new packets to the waiting list
+   // Includes array overflow protection
+   if ((tick<sim_length)&&(arrivals[tick] == 1)) {
+     packet_buffer +=1;
+   }
+   
+   
  }
  
  void process_slot() {
@@ -163,63 +234,7 @@ class station {
        set_state(0);
      }
   }
- 
- 
- void process_tick() {
-   
-   // Add any new packets to the waiting list
-   // Includes array overflow protection
-   if ((tick<sim_length)&&(arrivals[tick] == 1)) {
-     packet_buffer +=1;
-   }
-   
-   // If we're in DIFS mode, decrement the counter for each tick
-   if (state == 4) {
-     difs -=1; 
-   }
-   
-   // If in Backoff mode, decrement for any idle tick
-   // Note that the bound channel collision state is also valid for backoff
-   if ((state == 3)&&((bound_channel.state == 0)||(bound_channel.state == 2))) {
-     if(backoff > 0) {
-       backoff -= 1;
-     }
-   }
-   
-   // If in transmit mode, decrement the counter
-   if ((state == 2)&&(transmit_time>0)) {
-     transmit_time -= 1;
-   }
 
- }
- 
-  void process_tick_vc() {
-   
-   // Add any new packets to the waiting list
-   // Includes array overflow protection
-   if ((tick<sim_length)&&(arrivals[tick] == 1)) {
-     packet_buffer +=1;
-   }
-   
-   // If we're in RTS mode, decrement the counter for each tick
-   if ((state == 5) && (rts>0)) {
-     rts -=1; 
-   }
-   
-   // If in Backoff mode, decrement for any idle tick
-   // Note that the bound channel collision state is also valid for backoff
-   if ((state == 3)&&((bound_channel.state == 0)||(bound_channel.state == 2))) {
-     if(backoff > 0) {
-       backoff -= 1;
-     }
-   }
-   
-   // If in transmit mode, decrement the counter
-   if ((state == 2)&&(transmit_time>0)) {
-     transmit_time -= 1;
-   }
-
- }
  
  void generate_traffic(int fps) {
    
@@ -267,11 +282,13 @@ class station {
    println("Generated "+packet_count+" packets for " + name + " with lambda = " + fps);
  }
  
- void display(int display_mode) {
+ void display(int display_mode, int simple) {
    fill(statec);
    ellipse(xpos,ypos,30,30);
    fill(0);
-   text(name,xpos-6,ypos+7);
+   text(name,xpos-5,ypos+7);
+   
+   if (simple == 1) { return; }
    
    if (display_mode == 0) {   
      text("DIFS: "+difs,          xpos-25, ypos+40);

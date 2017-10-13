@@ -21,28 +21,30 @@ public void Exit_click(GButton source, GEvent event) { //_CODE_:Exit:710982:
 
 public void ScenA_clicked(GOption source, GEvent event) { //_CODE_:Scenario_A:899812:
   println("Scenario_A - GOption >> GEvent." + event + " @ " + millis());
-  reset_everything(scene);
-  setup_scene_A();
-  
-  scene = 0;
+
+  reset_everything(scenario);
+  scenario = 'A';
+  setup_scenario_A();
+
 } //_CODE_:Scenario_A:899812:
 
 public void ScenB_clicked(GOption source, GEvent event) { //_CODE_:Scenario_B:753477:
   println("Scenario_B - GOption >> GEvent." + event + " @ " + millis());
-  reset_everything(scene);
-  setup_scene_B();
-
-  scene = 1;
+  
+  reset_everything(scenario);
+  scenario = 'B';
+  setup_scenario_B();
+  
 } //_CODE_:Scenario_B:753477:
 
 public void coll_avoid_clicked(GOption source, GEvent event) { //_CODE_:coll_avoid:461684:
   println("coll_avoid - GOption >> GEvent." + event + " @ " + millis());
-  reset_everything(scene);
+  reset_everything(scenario);
 } //_CODE_:coll_avoid:461684:
 
 public void carrier_sense_clicked(GOption source, GEvent event) { //_CODE_:carrier_sense:562831:
   println("carrier_sense - GOption >> GEvent." + event + " @ " + millis());
-  reset_everything(scene);
+  reset_everything(scenario);
 } //_CODE_:carrier_sense:562831:
 
 public void Play_click(GButton source, GEvent event) { //_CODE_:Play:258134:
@@ -57,7 +59,7 @@ public void pause_click(GButton source, GEvent event) { //_CODE_:pause:285764:
 
 public void reset_click(GButton source, GEvent event) { //_CODE_:reset:446879:
   println("reset - GButton >> GEvent." + event + " @ " + millis());
-  reset_everything(scene);
+  reset_everything(scenario);
 } //_CODE_:reset:446879:
 
 public void fpt1_clicked(GOption source, GEvent event) { //_CODE_:fpt1:385218:
@@ -98,56 +100,56 @@ public void fpt4_clicked(GOption source, GEvent event) { //_CODE_:fpt_4:802459:
 public void A_50_clicked(GOption source, GEvent event) { //_CODE_:A_50:955675:
   println("A_50 - GOption >> GEvent." + event + " @ " + millis());
   lambda_A = 50;
-  reset_everything(scene);
+  reset_everything(scenario);
   A.generate_traffic(lambda_A);
 } //_CODE_:A_50:955675:
 
 public void A_100_clicked(GOption source, GEvent event) { //_CODE_:A_100:295887:
   println("A_100 - GOption >> GEvent." + event + " @ " + millis());
   lambda_A = 100;
-  reset_everything(scene);
+  reset_everything(scenario);
   A.generate_traffic(lambda_A);
 } //_CODE_:A_100:295887:
 
 public void A_200_clicked(GOption source, GEvent event) { //_CODE_:A_200:441133:
   println("A_200 - GOption >> GEvent." + event + " @ " + millis());
   lambda_A = 200;
-  reset_everything(scene);
+  reset_everything(scenario);
   A.generate_traffic(lambda_A);
 } //_CODE_:A_200:441133:
 
 public void A_300_clicked(GOption source, GEvent event) { //_CODE_:A_300:840264:
   println("A_300 - GOption >> GEvent." + event + " @ " + millis());
   lambda_A = 300;
-  reset_everything(scene);
+  reset_everything(scenario);
   A.generate_traffic(lambda_A);
 } //_CODE_:A_300:840264:
 
 public void C_50_clicked(GOption source, GEvent event) { //_CODE_:C_50:983143:
   println("C_50 - GOption >> GEvent." + event + " @ " + millis());
   lambda_C = 50;
-  reset_everything(scene);
+  reset_everything(scenario);
   C.generate_traffic(lambda_C);
 } //_CODE_:C_50:983143:
 
 public void C_100_clicked(GOption source, GEvent event) { //_CODE_:C_100:247137:
   println("C_100 - GOption >> GEvent." + event + " @ " + millis());
   lambda_C = 100;
-  reset_everything(scene);
+  reset_everything(scenario);
   C.generate_traffic(lambda_C);
 } //_CODE_:C_100:247137:
 
 public void C_200_clicked(GOption source, GEvent event) { //_CODE_:C_200:804391:
   println("C_200 - GOption >> GEvent." + event + " @ " + millis());
   lambda_C = 200;
-  reset_everything(scene);
+  reset_everything(scenario);
   C.generate_traffic(lambda_C);
 } //_CODE_:C_200:804391:
 
 public void C_300_clicked(GOption source, GEvent event) { //_CODE_:C_300:803181:
   println("C_300 - GOption >> GEvent." + event + " @ " + millis());
   lambda_C = 300;
-  reset_everything(scene);
+  reset_everything(scenario);
   C.generate_traffic(lambda_C);
 } //_CODE_:C_300:803181:
 

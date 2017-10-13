@@ -7,7 +7,10 @@ channel W, X, Y, Z;
 PFont font;
 
 int tick = 0;
-int scene = 0;
+
+char scenario = 'A';
+String protocol = "CA";
+
 int frames_per_tick = 100;
 float percentage=0.0;
 boolean play = false;
@@ -18,7 +21,7 @@ public void setup(){
   customGUI();
   
   // Place your setup code here 
-  setup_scene_A();
+  setup_scenario_A();
   
   // Setup font
   font = loadFont("Consolas-Bold-20.vlw");
@@ -43,17 +46,18 @@ public void draw(){
       int count = int(pow(10.0,float(-frames_per_tick)));
 
       for (int i=count; i>0; i--) {
-        sim_tick(scene);
+        sim_tick(scenario);
       }
     } else {
       // Positive values of frame_per_tick lead to a slow sim speed
       if (frameCount % frames_per_tick == 0) {
-        sim_tick(scene);
+        sim_tick(scenario);
       }
     }
   }
   
-  draw_scene(scene);
+  draw_scene(scenario);
+  
   percentage = tick*100.0/sim_length;
   draw_stats(640,25);
   draw_boxes();

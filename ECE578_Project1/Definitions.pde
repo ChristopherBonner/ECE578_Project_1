@@ -16,6 +16,7 @@ int lambda_C = 50;
 int ACK_size = 30;             // bytes
 int RTS_size = 30;
 int CTS_size = 30;
+int DIFS_Duration = 40; //microseconds
 int transmission_rate = 750000; // 6 Mbps = 750,000 bytes/sec
 int CWmax = 1024;
 
@@ -25,9 +26,9 @@ int sim_length = 10 * 1000000;
 // Ticks are microseconds, slots are 20 microseconds
 int slot = 0, old_slot = 0;
 
-void setup_scene_A() {
+void setup_scenario_A() {
   W = new channel("W", 150, 300, 500, 300, A, B);
-  X = new channel("X", 150, 450, 500, 450, C, D);
+  X = new channel("X", 150, 600, 500, 600, C, D);
   A = new station("A", 150, 300, X, 800, 120);
   B = new station("B", 500, 300, X, 830, 120);
   C = new station("C", 150, 600, X, 890, 120);
@@ -37,7 +38,7 @@ void setup_scene_A() {
   C.generate_traffic(lambda_C);
 }
 
-void setup_scene_B() {
+void setup_scenario_B() {
   Y = new channel("Y", 100, 300, 400, 300, A, C);
   Z = new channel("Z", 700, 300, 400, 300, A, C);
   A = new station("A", 100, 300, Y, 840, 120);
@@ -48,86 +49,60 @@ void setup_scene_B() {
   C.generate_traffic(lambda_C);
 }
 
-void draw_scene(int mode) {
+void draw_scene(char mode) {
  
   // Scenario A
- if (mode == 0) {
-   //W.display();//
+ if (mode == 'A') {
+   W.display();//
    X.display();
-   A.display(0);
-   B.display(1);
-   C.display(0);
-   D.display(1);
+   A.display(0,0);
+   B.display(1,1);
+   C.display(0,0);
+   D.display(1,1);
 
  }
  
  // Scenario B
- else if (mode == 1) {
+ else if (mode == 'B') {
    Y.display();
    Z.display();
-   A.display(1);
-   B.display(1);
-   C.display(1);
+   A.display(1,0);
+   B.display(1,1);
+   C.display(1,0);
 
  }
 }
 
-void sim_tick(int scene) {
-  //println("Sim Tick " + tick);
+void sim_tick(char scenario) {
+
   tick +=1;
   
   if (tick % slot_duration == 0) {
     slot +=1;  
   }
   
-  // Scenario A
-  if (scene == 0) {
-    A.process_tick();
-    C.process_tick();
-
-    W.process_tick();
-    X.process_tick();
-    
-    if (tick % slot_duration == 0) {
-      A.process_slot();
-      C.process_slot();
-      X.process_slot();
-      A.process_slot(); // Have to repeat the process twice to see if collision or success occurred that slot
-      C.process_slot(); // Have to repeat the process twice to see if collision or success occurred that slot
-    }
+  if (scenario == 'A') {
+    A.tick(protocol);
+    C.tick(protocol);
   }
-  
-  // Scenario B
-  else if (scene == 1) {
-    A.process_tick_vc();
-    C.process_tick_vc();
-
-    if (tick % slot_duration == 0) {
-      A.process_slot_vc();
-      C.process_slot_vc();
-      //Y.syncronize();
-      Y.process_slot_vc();
-      Z.process_slot_vc();
-      
-      A.process_slot_vc();
-      C.process_slot_vc();
-    }
-
+  else if (scenario == 'B') {
+    A.tick(protocol);
+    C.tick(protocol);
   }
 }
 
-void reset_everything(int scene){
+void reset_everything(char scene){
  println("RESET EVERYTHING");
  tick = 0;
  slot = 0;
  
- if (scene == 0) {
+ if (scene == 'A') {
    A.reset();
    B.reset();
    C.reset();
    D.reset();
    X.reset();
- } else if (scene == 1) {
+ } else if (scene == 'B') {
    A.reset();
    B.reset();
    C.reset();
@@ -170,7 +145,7 @@ void print_statistics() {
   println("=============================================================================================");
   println("Node A sent " + A.sent + " of " + A.packet_count + " generated with lambda = " + lambda_A + "   T = " + throughput_A + " Kbps");
   println("Node B sent " + C.sent + " of " + C.packet_count + " generated with lambda = " + lambda_C + "   T = " + throughput_C + " Kbps");
-  if (scene == 0) {
+  if (scenario == 'A') {
     println("Collisions X = " + X.collisions);
   } else {
     println("Collisions Y = " + Y.collisions);
