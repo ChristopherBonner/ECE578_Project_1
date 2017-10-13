@@ -29,10 +29,10 @@ int slot = 0, old_slot = 0;
 void setup_scenario_A() {
   W = new channel("W", 150, 300, 500, 300, A, B);
   X = new channel("X", 150, 600, 500, 600, C, D);
-  A = new station("A", 150, 300, W, X, 800, 120);
-  B = new station("B", 500, 300, W, X, 830, 120);
-  C = new station("C", 150, 600, X, W, 890, 120);
-  D = new station("D", 500, 600, X, W, 920, 120);
+  A = new station("A", 150, 300, W, X, 800, 120, C);
+  B = new station("B", 500, 300, W, X, 830, 120, C);
+  C = new station("C", 150, 600, X, W, 890, 120, A);
+  D = new station("D", 500, 600, X, W, 920, 120, A);
   
   A.generate_traffic(lambda_A);
   C.generate_traffic(lambda_C);
@@ -41,9 +41,9 @@ void setup_scenario_A() {
 void setup_scenario_B() {
   Y = new channel("Y", 100, 300, 400, 300, A, C);
   Z = new channel("Z", 700, 300, 400, 300, A, C);
-  A = new station("A", 100, 300, Y, Z, 840, 120);
-  B = new station("B", 400, 300, Y, Z, 870, 120);  // TODO: Must be double channel bound!!!
-  C = new station("C", 700, 300, Z, Y, 900, 120);
+  A = new station("A", 100, 300, Y, Z, 840, 120, C);
+  B = new station("B", 400, 300, Y, Z, 870, 120, C);  // TODO: Must be double channel bound!!!
+  C = new station("C", 700, 300, Z, Y, 900, 120, A);
 
   A.generate_traffic(lambda_A);
   C.generate_traffic(lambda_C);
@@ -55,10 +55,10 @@ void draw_scene(char mode) {
  if (mode == 'A') {
    W.display();//
    X.display();
-   A.display(0,0);
-   B.display(1,1);
-   C.display(0,0);
-   D.display(1,1);
+   A.display(protocol,0);
+   B.display(protocol,1);
+   C.display(protocol,0);
+   D.display(protocol,1);
 
  }
  
@@ -66,9 +66,9 @@ void draw_scene(char mode) {
  else if (mode == 'B') {
    Y.display();
    Z.display();
-   A.display(1,0);
-   B.display(1,1);
-   C.display(1,0);
+   A.display(protocol,0);
+   B.display(protocol,1);
+   C.display(protocol,0);
 
  }
 }
@@ -90,6 +90,8 @@ void sim_tick(char scenario) {
   else if (scenario == 'B') {
     A.tick(protocol);
     C.tick(protocol);
+    Y.process_tick();
+    Z.process_tick();
   }
 }
 

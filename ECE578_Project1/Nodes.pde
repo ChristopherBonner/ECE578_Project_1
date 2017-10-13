@@ -11,13 +11,15 @@ class station {
  int k_coll = 0; // # of sequential collisions
  int packet_count = 0;
  int time_use;
+ int defer = 0;
  boolean start_trans = false, intent = false;
+ station partner;
  
  // Array to contain the arrival times for packets
  int[] arrivals = new int[sim_length];
  
  // Constructor
- station(String iname, float ix, float iy, channel ibound1, channel ibound2, float ix2, float iy2){
+ station(String iname, float ix, float iy, channel ibound1, channel ibound2, float ix2, float iy2, station ipartner){
   name = iname;
   xpos = ix;
   ypos = iy;
@@ -29,6 +31,8 @@ class station {
   difs = 0;
   sent = 0;
   rts = 0;
+  partner = ipartner;
+  println(partner);
  }
  
  void reset() {
@@ -54,7 +58,7 @@ class station {
        state = 3; statec = green; statestr = "ATTEMPT"; break;
        
      case 4: // DEFER
-       state = 4; statec = gray; statestr = "DEFER"; break;
+       state = 4; statec = blue; statestr = "DEFER"; break;
      
      case 5: // RTS-CTS
        state = 5; statec = blue; statestr = "RTS-CTS"; break;
@@ -119,10 +123,10 @@ class station {
          if ((channel_1.state==2)||(channel_2.state==2)) {
            k_coll += 1;
            int CW = constrain(int(pow(2, k_coll)*(CW0-1)),0,CWmax);
-           backoff = round(random(0, CW * slot_duration     )); println("B: "+backoff + " K " + k_coll);
+           backoff = round(random(0, CW * slot_duration     )); //println("B: "+backoff+" K: "+k_coll);
            channel_1.using = 0; channel_2.using = 0;
            channel_1.collisions += 1; channel_2.collisions += 1;
-           set_state(3);
+           set_state(2);
          } // Can start transmission
          else {
             start_trans = true;
@@ -155,125 +159,91 @@ class station {
      packet_buffer +=1;
    }
    
+   switch(state)
+   {
+     case 0: // IDLE
+       // If we hear a CTS, go to DEFER
+       
+       // If there's nothing to transmit, do nothing
+       if (packet_buffer == 0) { }
+       // If packet(s) ready, set the RTS time and switch to RTS
+       else if (packet_buffer > 0) {
+         rts = ((RTS_size+CTS_size) * 1000000) / transmission_rate;
+         set_state(5);
+       }
+       break;
+       
+     case 2: // BACKOFF
+       // Decrement the backoff counter if the channel is not busy
+       if ((backoff > 0)&&(channel_1.state==0)&&(channel_2.state==0)) { backoff -= 1; }
+       // If the backoff timer expires, go to ATTEMPT
+       if (backoff <= 0) {
+         rts = ((RTS_size+CTS_size) * 1000000) / transmission_rate;
+         set_state(5);
+       }
+       break;
+       
+     case 3: // ATTEMPT
+       // Free to transmit
+       if (start_trans == true) { transmit_time -=1; time_use += 1;}
+       
+       // Transmission complete
+       if (transmit_time <= 0) {
+         sent += 1;
+         packet_buffer -=1;
+         start_trans = false;
+         intent = false;
+         channel_1.using = 0; channel_2.using = 0;
+         set_state(0);
+         k_coll = 0;
+       }
+       break;
+       
+     case 4: // DEFER
+       if (defer > 0) { defer -= 1; }
+       
+       if (defer <= 0) { set_state(0); }
+       break;
+     
+     case 5: // RTS-CTS
+       // Indicate intent to use the channels
+       if (intent == false) { channel_1.using += 1; channel_2.using += 1; intent = true;}
+       // Decrement the difs counter
+       if (rts > 0) { rts -= 1; }
+       // If we reach the end of the RTS count, lets see if a collision occurred
+       if ((rts <= 0)&&(tick % slot_duration == 0)) {
+         // If either channel already in collision mode, collision has occurred
+         if ((channel_1.state==2)||(channel_2.state==2)) {
+           k_coll += 1;
+           int CW = constrain(int(pow(2, k_coll)*(CW0-1)),0,CWmax);
+           backoff = round(random(0, CW * slot_duration     ));
+           channel_1.using = 0; channel_2.using = 0;
+           channel_1.collisions += 1; channel_2.collisions += 1;
+           set_state(2);
+         } // or we're ready to transmit!
+         else {
+           start_trans = true;
+           // Calculate transmit time needed
+           int data_trans = (data_frame_size * 1000000) / transmission_rate;  // time in microseconds to transmit data frame
+           int ACK_trans = (ACK_size * 1000000) / transmission_rate;          // time in microseconds to transmit ACK
+           transmit_time = data_trans + SIFS_duration + ACK_trans;
+           
+           if (name == "A") {
+             C.defer = transmit_time + 10;
+             C.set_state(4);
+           } else {
+             A.defer = transmit_time + 10;
+             A.set_state(4);
+           }
+           set_state(3);
+         }
+       }
+       
+       break;
+   }
    
  }
- 
- //void process_slot() {
-   
- //  // If there's nothing to transmit, set station idle
- //  if (packet_buffer == 0) { set_state(0); return;}
-   
- //  // If there are packet(s) waiting, start going through the transmit process
- //  else if (packet_buffer > 0) {
-     
- //    // If we were idle, lets enter DIFS
- //    if (state == 0) { set_state(4); difs = 40;}
-     
- //    // If the DIFS countdown is complete, enter backoff mode
- //    if ((state == 4)&&(difs <= 0)) {
- //      backoff = round(random(0,(CW0-1)*slot_duration));
- //      set_state(3);
- //    }
-     
- //    // If the backoff counter runs out, attempt transmission
- //    if ((state == 3)&&(backoff <=0)) {
- //      set_state(1);
- //      bound_channel.stations_using += 1;
- //    }
-     
- //    // Collision !!!
- //    if ((state == 1)&&(bound_channel.state == 2)) {
- //      k_coll += 1;
- //      int CW = constrain(int(pow(2, k_coll)*(CW0-1)),0,CWmax);
- //      backoff = round(random(0, CW * slot_duration     ));
- //      bound_channel.stations_using = 0;
- //      set_state(3);
- //    }
-     
- //    // Success - we got the channel
- //    if ((state == 1)&&(bound_channel.state == 1)) {
- //      set_state(2);
- //      int data_trans = (data_frame_size * 1000000) / transmission_rate;  // time in microseconds to transmit data frame
- //      int ACK_trans = (ACK_size * 1000000) / transmission_rate;          // time in microseconds to transmit ACK
-       
- //      transmit_time = data_trans + SIFS_duration + ACK_trans;
-       
- //      k_coll = 0;
- //    }
-     
- //    // Transmission complete
- //    if ((state == 2)&&(transmit_time <= 0)) {
- //      sent += 1;
- //      packet_buffer -=1;
- //      bound_channel.set_state(0);
- //      bound_channel.stations_using = 0;
- //      set_state(0);
- //    }
- //  }
- //}
- 
-  //void process_slot_vc() {
-  //  // If there's nothing to transmit, set station idle
-  // if (packet_buffer == 0) { set_state(0); return;}
-   
-  // // If there are packet(s) waiting, start going through the transmit process
-  // else if (packet_buffer > 0) {
-     
-  //   // If we were idle, lets enter RTS
-  //   if ((state == 0)&&(bound_channel.state!=1)) {
-  //     set_state(5);
-  //     rts = ((RTS_size+CTS_size) * 1000000) / transmission_rate;
-  //     bound_channel.set_state(3);}
-  // }
-   
-  // // If the RTS countdown is complete, enter ready-to-transmit
-  //   if ((state == 5)&&(rts <= 0)&&(bound_channel.state!=1)) {
-  //     //backoff = round(random(0,(CW0-1)*slot_duration));
-  //     //bound_channel.stations_using += 1;
-  //     set_state(1);
-  //   }
-   
-  // // If the backoff counter runs out, attempt transmission
-  //   if ((state == 3)&&(backoff <=0)) {
-  //     set_state(5);
-  //     //bound_channel.stations_using += 1;
-  //   }
-   
-  // // Collision !!!
-  //   if ((state == 1)&&(bound_channel.state == 2)) {
-  //     k_coll += 1;
-  //     int CW = constrain(int(pow(2, k_coll)*(CW0-1)),0,CWmax);
-  //     backoff = round(random(0, CW * slot_duration     ));
-  //     //bound_channel.stations_using = 0;
-  //     set_state(3);
-  //   }
-     
-  // // Success - we got the channel
-  // if ((state == 1)&&(bound_channel.state == 1)) {
-  //   set_state(2);
-  //   int data_trans = (data_frame_size * 1000000) / transmission_rate;  // time in microseconds to transmit data frame
-  //   int ACK_trans = (ACK_size * 1000000) / transmission_rate;          // time in microseconds to transmit ACK
-     
-  //   transmit_time = data_trans + SIFS_duration + ACK_trans;
-     
-  //   Y.set_state(1);
-  //   Z.set_state(1);
-     
-  //   k_coll = 0;
-  // }
-     
-  // // Transmission complete
-  //   if ((state == 2)&&(transmit_time <= 0)) {
-  //     sent += 1;
-  //     packet_buffer -=1;
-  //     bound_channel.set_state(0);
-  //     Y.set_state(0);
-  //     Z.set_state(0);
-  //     bound_channel.stations_using = 0;
-  //     set_state(0);
-  //   }
-  //}
-
+  
  
  void generate_traffic(int fps) {
    
@@ -321,7 +291,7 @@ class station {
    println("Generated "+packet_count+" packets for " + name + " with lambda = " + fps);
  }
  
- void display(int display_mode, int simple) {
+ void display(String display_mode, int simple) {
    fill(statec);
    ellipse(xpos,ypos,30,30);
    fill(0);
@@ -329,10 +299,11 @@ class station {
    
    if (simple == 1) { return; }
    
-   if (display_mode == 0) {   
+   if (display_mode == "CA") {   
      text("DIFS: "+difs,          xpos-25, ypos+40);
-   } else if (display_mode == 1) {
-     text(" RTS: "+rts, xpos-25,ypos+40);  
+   } else if (display_mode == "VCS") {
+     text(" RTS: "+rts, xpos-25,ypos+40);
+     text("DEFR: "+defer, xpos-25,ypos+100);
    }
    
    text("Buff: "+packet_buffer, xpos-25, ypos-30);
