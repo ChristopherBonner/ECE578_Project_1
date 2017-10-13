@@ -29,10 +29,10 @@ int slot = 0, old_slot = 0;
 void setup_scenario_A() {
   W = new channel("W", 150, 300, 500, 300, A, B);
   X = new channel("X", 150, 600, 500, 600, C, D);
-  A = new station("A", 150, 300, X, 800, 120);
-  B = new station("B", 500, 300, X, 830, 120);
-  C = new station("C", 150, 600, X, 890, 120);
-  D = new station("D", 500, 600, X, 920, 120);
+  A = new station("A", 150, 300, W, X, 800, 120);
+  B = new station("B", 500, 300, W, X, 830, 120);
+  C = new station("C", 150, 600, X, W, 890, 120);
+  D = new station("D", 500, 600, X, W, 920, 120);
   
   A.generate_traffic(lambda_A);
   C.generate_traffic(lambda_C);
@@ -41,9 +41,9 @@ void setup_scenario_A() {
 void setup_scenario_B() {
   Y = new channel("Y", 100, 300, 400, 300, A, C);
   Z = new channel("Z", 700, 300, 400, 300, A, C);
-  A = new station("A", 100, 300, Y, 840, 120);
-  B = new station("B", 400, 300, Y, 870, 120);  // TODO: Must be double channel bound!!!
-  C = new station("C", 700, 300, Z, 900, 120);
+  A = new station("A", 100, 300, Y, Z, 840, 120);
+  B = new station("B", 400, 300, Y, Z, 870, 120);  // TODO: Must be double channel bound!!!
+  C = new station("C", 700, 300, Z, Y, 900, 120);
 
   A.generate_traffic(lambda_A);
   C.generate_traffic(lambda_C);
@@ -84,6 +84,8 @@ void sim_tick(char scenario) {
   if (scenario == 'A') {
     A.tick(protocol);
     C.tick(protocol);
+    W.process_tick();
+    X.process_tick();
   }
   else if (scenario == 'B') {
     A.tick(protocol);
@@ -142,9 +144,14 @@ void print_statistics() {
   int throughput_A = (A.sent * data_frame_size * 8) / (10 * 1000);
   int throughput_C = (C.sent * data_frame_size * 8) / (10 * 1000);
   
+  float fairness_A = float(A.time_use) / float(C.time_use);
+  //float fairness_C = C.time_use / A.time_use;
+  
   println("=============================================================================================");
   println("Node A sent " + A.sent + " of " + A.packet_count + " generated with lambda = " + lambda_A + "   T = " + throughput_A + " Kbps");
-  println("Node B sent " + C.sent + " of " + C.packet_count + " generated with lambda = " + lambda_C + "   T = " + throughput_C + " Kbps");
+  println("A fairness vs C : " + fairness_A );
+  println("Node C sent " + C.sent + " of " + C.packet_count + " generated with lambda = " + lambda_C + "   T = " + throughput_C + " Kbps");
+
   if (scenario == 'A') {
     println("Collisions X = " + X.collisions);
   } else {

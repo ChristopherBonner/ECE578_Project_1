@@ -38,13 +38,15 @@ public void ScenB_clicked(GOption source, GEvent event) { //_CODE_:Scenario_B:75
 } //_CODE_:Scenario_B:753477:
 
 public void coll_avoid_clicked(GOption source, GEvent event) { //_CODE_:coll_avoid:461684:
-  println("coll_avoid - GOption >> GEvent." + event + " @ " + millis());
+  println("Switched to Collision Avoidance protocol");
   reset_everything(scenario);
+  protocol = "CA";
 } //_CODE_:coll_avoid:461684:
 
 public void carrier_sense_clicked(GOption source, GEvent event) { //_CODE_:carrier_sense:562831:
-  println("carrier_sense - GOption >> GEvent." + event + " @ " + millis());
+  println("Switched to Virtual Carrier Sense protocol");
   reset_everything(scenario);
+  protocol = "VCS";
 } //_CODE_:carrier_sense:562831:
 
 public void Play_click(GButton source, GEvent event) { //_CODE_:Play:258134:
