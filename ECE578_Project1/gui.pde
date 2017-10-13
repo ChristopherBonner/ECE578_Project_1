@@ -127,6 +127,20 @@ public void A_300_clicked(GOption source, GEvent event) { //_CODE_:A_300:840264:
   A.generate_traffic(lambda_A);
 } //_CODE_:A_300:840264:
 
+public void A_600_clicked1(GOption source, GEvent event) { //_CODE_:A_600:929667:
+  println("A_600 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_A = 600;
+  reset_everything(scenario);
+  A.generate_traffic(lambda_A);
+} //_CODE_:A_600:929667:
+
+public void A_400_clicked1(GOption source, GEvent event) { //_CODE_:A_400:630474:
+  println("A_400 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_A = 400;
+  reset_everything(scenario);
+  A.generate_traffic(lambda_A);
+} //_CODE_:A_400:630474:
+
 public void C_50_clicked(GOption source, GEvent event) { //_CODE_:C_50:983143:
   println("C_50 - GOption >> GEvent." + event + " @ " + millis());
   lambda_C = 50;
@@ -154,6 +168,20 @@ public void C_300_clicked(GOption source, GEvent event) { //_CODE_:C_300:803181:
   reset_everything(scenario);
   C.generate_traffic(lambda_C);
 } //_CODE_:C_300:803181:
+
+public void C_600_clicked1(GOption source, GEvent event) { //_CODE_:C_600:320122:
+  println("C_600 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_C = 600;
+  reset_everything(scenario);
+  C.generate_traffic(lambda_C);
+} //_CODE_:C_600:320122:
+
+public void C_400_clicked1(GOption source, GEvent event) { //_CODE_:C_400:969156:
+  println("C_400 - GOption >> GEvent." + event + " @ " + millis());
+  lambda_C = 400;
+  reset_everything(scenario);
+  C.generate_traffic(lambda_C);
+} //_CODE_:C_400:969156:
 
 
 
@@ -291,11 +319,25 @@ public void createGUI(){
   A_300.setTextBold();
   A_300.setOpaque(false);
   A_300.addEventHandler(this, "A_300_clicked");
+  A_600 = new GOption(this, 470, 160, 70, 20);
+  A_600.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  A_600.setText("600 f/s");
+  A_600.setTextBold();
+  A_600.setOpaque(false);
+  A_600.addEventHandler(this, "A_600_clicked1");
+  A_400 = new GOption(this, 470, 140, 70, 20);
+  A_400.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  A_400.setText("400 f/s");
+  A_400.setTextBold();
+  A_400.setOpaque(false);
+  A_400.addEventHandler(this, "A_400_clicked1");
   A_speed.addControl(A_50);
   A_50.setSelected(true);
   A_speed.addControl(A_100);
   A_speed.addControl(A_200);
   A_speed.addControl(A_300);
+  A_speed.addControl(A_600);
+  A_speed.addControl(A_400);
   label_topo = new GLabel(this, 20, 40, 80, 20);
   label_topo.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   label_topo.setText("Topology");
@@ -339,11 +381,25 @@ public void createGUI(){
   C_300.setTextBold();
   C_300.setOpaque(false);
   C_300.addEventHandler(this, "C_300_clicked");
+  C_600 = new GOption(this, 580, 160, 70, 20);
+  C_600.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  C_600.setText("600 f/s");
+  C_600.setTextBold();
+  C_600.setOpaque(false);
+  C_600.addEventHandler(this, "C_600_clicked1");
+  C_400 = new GOption(this, 580, 140, 70, 20);
+  C_400.setIconAlign(GAlign.LEFT, GAlign.MIDDLE);
+  C_400.setText("400 f/s");
+  C_400.setTextBold();
+  C_400.setOpaque(false);
+  C_400.addEventHandler(this, "C_400_clicked1");
   C_speed.addControl(C_50);
   C_50.setSelected(true);
   C_speed.addControl(C_100);
   C_speed.addControl(C_200);
   C_speed.addControl(C_300);
+  C_speed.addControl(C_600);
+  C_speed.addControl(C_400);
   A_arrive = new GLabel(this, 460, 40, 100, 20);
   A_arrive.setTextAlign(GAlign.CENTER, GAlign.MIDDLE);
   A_arrive.setText("A (frame/sec)");
@@ -381,6 +437,8 @@ GOption A_50;
 GOption A_100; 
 GOption A_200; 
 GOption A_300; 
+GOption A_600; 
+GOption A_400; 
 GLabel label_topo; 
 GLabel proto_label; 
 GLabel label1; 
@@ -389,5 +447,7 @@ GOption C_50;
 GOption C_100; 
 GOption C_200; 
 GOption C_300; 
+GOption C_600; 
+GOption C_400; 
 GLabel A_arrive; 
 GLabel C_label; 

@@ -254,7 +254,7 @@ class station {
    
    // Generate an array of values between 0.0 and 1.0
    // Doing 5000 count since we shouldn't need more than that many packets
-   int num_packets = 5000;
+   int num_packets = 10000;
    float[] uniform = new float[num_packets];
    for (int i=0; i < num_packets; i++) {
      uniform[i] = random(0.0, 1.0);
